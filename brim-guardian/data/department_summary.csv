@@ -1,0 +1,9 @@
+department,total_spent,transaction_count,reasonable_transactions,flagged_transactions,average_score_after_transactions
+Engineering,268268.41,598,561,27,84.9
+Finance,258313.59,499,466,28,84.66
+Marketing,190018.44,604,569,30,85.58
+Customer Success,183167.22,499,469,22,85.21
+Sales,172423.22,526,485,32,85.31
+Human Resources,154899.96,510,482,20,85.49
+Operations,153792.33,514,497,12,85.32
+Product,130828.39,485,464,16,86.18

@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+charts/output/
+voice/output/
+*.png
+*.mp3
+.DS_Store
