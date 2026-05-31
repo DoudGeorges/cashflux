@@ -76,7 +76,6 @@ const PASTEL_COLORS = [
 
 const ALERTS = [];
 const APPROVALS = [];
-const REPORTS = [];
 let flagsLoaded = false;
 let budgetLoaded = false;
 let budgetPayload = null;
@@ -85,7 +84,6 @@ let budgetSelectedDept = null;
 let settingsLoaded = false;
 let settingsBudgetData = null;
 let approvalsLoaded = false;
-let reportsLoaded = false;
 let purchasesLoaded = false;
 let purchasesData = null;
 let purchasesFilters = {
@@ -2463,122 +2461,6 @@ async function handleApproval(itemKey, approved) {
     refreshNavBadges();
 }
 
-function reportStatusLabel(status) {
-    const map = {
-        pending_cfo: 'Pending CFO',
-        approved: 'Approved',
-        rejected: 'Rejected',
-    };
-    return map[status] || status;
-}
-
-function renderReports(items = REPORTS) {
-    const el = document.getElementById('reports-list');
-    if (!el) return;
-    if (!items.length) {
-        el.innerHTML = '<div class="guardian-item">No trip reports yet.</div>';
-        return;
-    }
-    el.innerHTML = items.map((r) => `
-        <div class="report-item">
-            <strong>${escapeHtml(r.title)}</strong>
-            <div class="report-meta">${r.txs} transactions ? ${escapeHtml(r.date_range || '')} ? ${escapeHtml(r.total_flagged || '')}</div>
-            <div class="report-meta">${escapeHtml(r.policy_summary || '')}</div>
-            <div class="report-tags">
-                ${r.tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
-                ${r.violation ? '<span class="tag tag--violation">Policy issues</span>' : '<span class="tag tag--ok">Policy OK</span>'}
-                <span class="tag tag--status">${escapeHtml(reportStatusLabel(r.status))}</span>
-            </div>
-            <div class="report-actions">
-                <button class="btn-sm" data-report-key="${escapeHtml(r.report_key)}">View report</button>
-                ${r.status === 'pending_cfo' ? `
-                    <button class="btn-sm btn-approve" data-report-decide="${escapeHtml(r.report_key)}" data-approve="true">CFO Approve</button>
-                    <button class="btn-sm btn-deny" data-report-decide="${escapeHtml(r.report_key)}" data-approve="false">Reject</button>
-                ` : ''}
-            </div>
-        </div>
-    `).join('');
-    el.querySelectorAll('[data-report-key]').forEach((btn) => {
-        btn.addEventListener('click', () => openReportModal(btn.dataset.reportKey));
-    });
-    el.querySelectorAll('[data-report-decide]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            handleReportDecision(btn.dataset.reportDecide, btn.dataset.approve === 'true');
-        });
-    });
-}
-
-async function openReportModal(reportKey) {
-    const modal = document.getElementById('report-detail-modal');
-    const body = document.getElementById('report-modal-body');
-    const footer = document.getElementById('report-modal-footer');
-    const title = document.getElementById('report-modal-title');
-    if (!modal || !body) return;
-    body.innerHTML = '<div class="guardian-item">Loading report?</div>';
-    modal.hidden = false;
-    try {
-        const res = await fetch(`/api/reports/${encodeURIComponent(reportKey)}`);
-        const r = await res.json();
-        if (!res.ok) throw new Error(r.error || 'Failed to load report');
-        if (title) title.textContent = r.title;
-        const txRows = (r.transactions || []).map((t) => `
-            <tr><td>${escapeHtml(t.date)}</td><td>${escapeHtml(t.vendor)}</td><td>${escapeHtml(t.category)}</td><td>${escapeHtml(t.amount)}</td></tr>
-        `).join('');
-        body.innerHTML = `
-            <p><strong>${escapeHtml(r.employee)}</strong> ? ${escapeHtml(r.department)} ? ${escapeHtml(r.date_range)}</p>
-            <p>${escapeHtml(r.policy_summary)}</p>
-            ${(r.violations || []).length ? `<ul class="approval-context">${r.violations.map((v) => `<li>${escapeHtml(v)}</li>`).join('')}</ul>` : ''}
-            <div class="tx-table-wrap"><table class="tx-table"><thead><tr><th>Date</th><th>Vendor</th><th>Category</th><th>Amount</th></tr></thead><tbody>${txRows}</tbody></table></div>
-        `;
-        if (footer) {
-            footer.innerHTML = r.status === 'pending_cfo'
-                ? `<button class="btn-sm btn-approve" id="modal-report-approve">CFO Approve</button>
-                   <button class="btn-sm btn-deny" id="modal-report-reject">Reject</button>`
-                : `<span class="tag tag--status">${escapeHtml(reportStatusLabel(r.status))}</span>`;
-            document.getElementById('modal-report-approve')?.addEventListener('click', () => handleReportDecision(reportKey, true));
-            document.getElementById('modal-report-reject')?.addEventListener('click', () => handleReportDecision(reportKey, false));
-        }
-    } catch (err) {
-        body.innerHTML = `<div class="guardian-item">${escapeHtml(err.message)}</div>`;
-    }
-}
-
-async function handleReportDecision(reportKey, approved) {
-    try {
-        const res = await fetch(`/api/reports/${encodeURIComponent(reportKey)}/decide`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ approved }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Decision failed');
-        reportsLoaded = false;
-        await loadReports(true);
-        refreshNavBadges();
-        document.getElementById('report-detail-modal').hidden = true;
-    } catch (err) {
-        alert(err.message);
-    }
-}
-
-async function loadReports(force = false) {
-    const el = document.getElementById('reports-list');
-    if (!el) return;
-    if (reportsLoaded && !force) return;
-    el.innerHTML = '<div class="guardian-item">Loading expense reports?</div>';
-    try {
-        const res = await fetch('/api/reports');
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to load reports');
-        REPORTS.length = 0;
-        REPORTS.push(...data);
-        reportsLoaded = true;
-        renderReports(REPORTS);
-    } catch (err) {
-        el.innerHTML = `<div class="guardian-item">${escapeHtml(err.message)}</div>`;
-    }
-}
-
 function renderTeamRoster(employees) {
     const el = document.getElementById('employee-roster');
     if (!el) return;
@@ -3448,12 +3330,11 @@ const PAGE_TITLES = {
     activity: 'All purchases',
     receipts: 'Receipts',
     proposals: 'My projects',
-    'trip-reports': 'Trip reports',
+    'trip-reports': 'Travel reports',
     budget: 'Budgets',
     map: 'Map',
     alerts: 'Problems',
     approvals: 'Review',
-    reports: 'Trip reports',
     chat: 'Friday',
     settings: 'Settings',
 };
@@ -3469,7 +3350,6 @@ const PAGE_SUBTITLES = {
     map: 'Where purchases happened around the world.',
     alerts: 'Repeat offenders and purchases that look wrong.',
     approvals: 'Pending requests and fraud-flagged purchases in one priority queue.',
-    reports: 'Trip bundles ready for sign-off.',
     chat: '',
     settings: 'Set department budgets and spending rules in one place.',
 };
@@ -3480,12 +3360,11 @@ const COMMAND_ITEMS = [
     { id: 'activity', label: 'All purchases', group: 'Pages', icon: 'fa-receipt', keywords: 'transactions purchases list' },
     { id: 'receipts', label: 'Receipts', group: 'Pages', icon: 'fa-camera', keywords: 'receipt scan ocr upload photo' },
     { id: 'proposals', label: 'My projects', group: 'Pages', icon: 'fa-folder-open', keywords: 'project budget request proposal submit my projects' },
-    { id: 'trip-reports', label: 'Trip reports', group: 'Pages', icon: 'fa-suitcase-rolling', keywords: 'travel trip expense report reimbursement submit' },
+    { id: 'trip-reports', label: 'Travel reports', group: 'Pages', icon: 'fa-suitcase-rolling', keywords: 'travel trip expense report reimbursement submit' },
     { id: 'people', label: 'People', group: 'Pages', icon: 'fa-users', keywords: 'department employees roster' },
     { id: 'map', label: 'Map', group: 'Pages', icon: 'fa-map-location-dot', keywords: 'location cities map' },
     { id: 'alerts', label: 'Problems', group: 'Pages', icon: 'fa-triangle-exclamation', keywords: 'flags policy violations bad purchases' },
     { id: 'approvals', label: 'Review', group: 'Pages', icon: 'fa-clipboard-check', keywords: 'pending approve deny fraud review queue' },
-    { id: 'reports', label: 'Trip reports', group: 'Pages', icon: 'fa-file-lines', keywords: 'trip cfo reports' },
     { id: 'chat', label: 'Friday', group: 'Pages', icon: 'fa-comments', keywords: 'ai chat ask question help voice friday' },
     { id: 'settings', label: 'Settings', group: 'Setup', icon: 'fa-gear', keywords: 'department budget rules policy edit configure' },
     { id: 'settings:budgets', label: 'Settings: Department budgets', group: 'Setup', icon: 'fa-wallet', view: 'settings', settingsTab: 'budgets' },
@@ -3513,7 +3392,6 @@ function updateNavBadges(counts) {
     setBadge('nav-badge-flags', counts?.flags);
     const reviewTotal = counts?.review_pending ?? ((counts?.approvals || 0) + (counts?.fraud_pending || 0));
     setBadge('nav-badge-approvals', reviewTotal, true);
-    setBadge('nav-badge-reports', counts?.reports_pending);
 }
 
 async function refreshNavBadges() {
@@ -4015,7 +3893,6 @@ function setupSidebarNav() {
         map: document.getElementById('insight-map'),
         alerts: document.getElementById('insight-alerts'),
         approvals: document.getElementById('insight-approvals'),
-        reports: document.getElementById('insight-reports'),
         chat: document.getElementById('insight-chat'),
         settings: document.getElementById('insight-settings'),
     };
@@ -4023,7 +3900,7 @@ function setupSidebarNav() {
     const pageTitle = document.getElementById('page-title');
     const pageSubtitle = document.getElementById('page-subtitle');
 
-    const ADMIN_VIEWS = new Set(['budget', 'people', 'alerts', 'approvals', 'reports', 'settings']);
+    const ADMIN_VIEWS = new Set(['budget', 'people', 'alerts', 'approvals', 'settings']);
 
     function switchView(key, options = {}) {
         if (key === 'fraud') {
@@ -4070,7 +3947,6 @@ function setupSidebarNav() {
             }
             loadReview(options.forceReview);
         }
-        if (key === 'reports') loadReports();
         if (key === 'map' && !expenseMapLoaded) loadExpenseMap();
         if (key === 'map' && expenseMapLoaded && expenseMap) {
             google.maps.event.trigger(expenseMap, 'resize');
@@ -4317,7 +4193,8 @@ function detectVoiceNavFromTranscript(transcript) {
         ['people', /\b(people|employees?|roster|staff)\b/],
         ['activity', /\b(purchases?|transactions?|all purchases|activity|my purchases)\b/],
         ['map', /\b(map|locations?)\b/],
-        ['reports', /\b(trip reports?|expense reports?|cfo reports?)\b/],
+        ['trip-reports', /\b(travel report|trip report|submit.*trip|my trip)\b/],
+        ['approvals', /\b(trip reports?|expense reports?|cfo reports?)\b/],
         ['chat', /\b(chat|ask anything|text chat)\b/],
         ['settings', /\b(settings|spending rules|configure|setup)\b/],
         ['overview', /\b(home|dashboard|overview|main page)\b/],
@@ -4371,14 +4248,6 @@ function tryClientInstantVoiceReply(transcript) {
                 engine: 'instant',
             };
         }
-        if (/\b(how many|count).*\b(report|trip)\b/i.test(low)) {
-            const n = cachedNavCounts.reports_pending || 0;
-            const word = n === 1 ? 'report' : 'reports';
-            return {
-                reply: `${n} trip ${word} waiting for CFO review.`,
-                engine: 'instant',
-            };
-        }
     }
 
     const totals = dashboardPayload?.totals;
@@ -4390,9 +4259,9 @@ function tryClientInstantVoiceReply(transcript) {
         if (/\b(what needs my attention|what's pending|what should i (do|review|look at))\b/i.test(low) && cachedNavCounts) {
             const a = cachedNavCounts.approvals || 0;
             const f = cachedNavCounts.flags || 0;
-            const r = cachedNavCounts.reports_pending || 0;
+            const reviewTotal = cachedNavCounts.review_pending ?? a;
             return {
-                reply: `You have ${a} approvals, ${f} flagged purchases, and ${r} trip reports waiting.`,
+                reply: `You have ${reviewTotal} items in the review queue and ${f} flagged purchases.`,
                 engine: 'instant',
             };
         }
