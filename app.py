@@ -66,6 +66,11 @@ User, Company = bind_auth(db)
 register_auth_routes(app)
 
 
+@app.route("/api/health")
+def api_health():
+    return jsonify({"ok": True, "service": "cashflux"})
+
+
 @app.errorhandler(404)
 def api_not_found(e):
     if request.path.startswith("/api/"):
