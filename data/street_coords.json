@@ -1,0 +1,146 @@
+{
+  "750 BURRARD ST|V6Z 1X5|BC|CAN": {
+    "lat": 49.2832689,
+    "lng": -123.122416,
+    "verified": true,
+    "source": "photon"
+  },
+  "635 RUE SAINT-JACQUES|H3C 1E8|QC|CAN": {
+    "lat": 45.4937444,
+    "lng": -73.5676959,
+    "verified": true,
+    "source": "photon"
+  },
+  "3400 BOUL. SAINT-LAURENT|H2X 2T3|QC|CAN": {
+    "lat": 45.507066,
+    "lng": -73.5582655,
+    "verified": true,
+    "source": "photon"
+  },
+  "1455 RUE PEEL|H3A 1T5|QC|CAN": {
+    "lat": 45.5006924,
+    "lng": -73.5739439,
+    "verified": true,
+    "source": "photon"
+  },
+  "1304 RUE BEAUBIEN E|H2S 1T5|QC|CAN": {
+    "lat": 45.5390963,
+    "lng": -73.60038,
+    "verified": true,
+    "source": "photon"
+  },
+  "351 RUE SAINT-PAUL O|H2Y 2A7|QC|CAN": {
+    "lat": 45.5012166,
+    "lng": -73.5564042,
+    "verified": true,
+    "source": "photon"
+  },
+  "5000 RUE SHERBROOKE O|H4A 1T5|QC|CAN": {
+    "lat": 45.4754571,
+    "lng": -73.6075053,
+    "verified": true,
+    "source": "photon"
+  },
+  "7700 RUE SHERBROOKE E|H1L 6A8|QC|CAN": {
+    "lat": 45.6125422,
+    "lng": -73.5256534,
+    "verified": true,
+    "source": "photon"
+  },
+  "1250 BLVD REN\u00c9-L\u00c9VESQUE O|H3B 4W8|QC|CAN": {
+    "lat": 45.4975191,
+    "lng": -73.570973,
+    "verified": true,
+    "source": "photon"
+  },
+  "8800 BOUL. HENRI-BOURASSA E|H1E 2S4|QC|CAN": {
+    "lat": 45.6140021,
+    "lng": -73.5988472,
+    "verified": true,
+    "source": "photon"
+  },
+  "3895 BLVD. SAINT-LAURENT|H2W 1X9|QC|CAN": {
+    "lat": 45.5163277,
+    "lng": -73.5776499,
+    "verified": true,
+    "source": "photon"
+  },
+  "1600 BOUL. DES LAURENTIDES|H7N 2M7|QC|CAN": {
+    "lat": 45.5981821,
+    "lng": -73.7233328,
+    "verified": true,
+    "source": "photon"
+  },
+  "1 RUE DES CARRI\u00c8RES|G1R 4P5|QC|CAN": {
+    "lat": 46.8118175,
+    "lng": -71.2051438,
+    "verified": true,
+    "source": "photon"
+  },
+  "975 BOUL. ROMEO-VACHON N|H4Y 1H1|QC|CAN": {
+    "lat": 45.4577452,
+    "lng": -73.7512963,
+    "verified": true,
+    "source": "photon"
+  },
+  "900 PLACE JEAN-PAUL-RIOPELLE|H2Z 0B1|QC|CAN": {
+    "lat": 45.5028924,
+    "lng": -73.5612596,
+    "verified": true,
+    "source": "photon"
+  },
+  "800 RUE DE LA GAUCHETI\u00c8RE O|H5A 1K6|QC|CAN": {
+    "lat": 45.499539,
+    "lng": -73.5658697,
+    "verified": true,
+    "source": "photon"
+  },
+  "1200 RUE GUY|H3H 2L8|QC|CAN": {
+    "lat": 45.4936158,
+    "lng": -73.5767835,
+    "verified": true,
+    "source": "photon"
+  },
+  "2000 MCGILL COLLEGE AVE|H3A 3H3|QC|CAN": {
+    "lat": 45.5026844,
+    "lng": -73.5735645,
+    "verified": true,
+    "source": "photon"
+  },
+  "11011 BLVD. LACORDAIRE|H1G 4M7|QC|CAN": {
+    "lat": 45.6039878,
+    "lng": -73.6166762,
+    "verified": true,
+    "source": "photon"
+  },
+  "1250 RUE SAINTE-CATHERINE O|H3B 1E9|QC|CAN": {
+    "lat": 45.5007588,
+    "lng": -73.5721808,
+    "verified": true,
+    "source": "photon"
+  },
+  "151 RUE SAINTE-CATHERINE O|H2X 1Y8|QC|CAN": {
+    "lat": 45.5113074,
+    "lng": -73.5627021,
+    "verified": true,
+    "source": "photon"
+  },
+  "4000 RUE SAINTE-CATHERINE O|H3Z 1P5|QC|CAN": {
+    "lat": 45.4889177,
+    "lng": -73.5847719,
+    "verified": true,
+    "source": "photon"
+  },
+  "1055 CANADA PL|V6C 0C3|BC|CAN": {
+    "lat": 49.2888506,
+    "lng": -123.1160655,
+    "verified": true,
+    "source": "photon"
+  },
+  "600 BLVD DE MAISONNEUVE O|H3A 0A3|QC|CAN": {
+    "lat": 45.5042287,
+    "lng": -73.5712124,
+    "verified": true,
+    "source": "photon"
+  }
+}

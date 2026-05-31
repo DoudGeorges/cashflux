@@ -1,0 +1,14 @@
+{
+  "quarters": {
+    "Q2 2026": {
+      "Customer Success": 200.0,
+      "Engineering": 500.0,
+      "Finance": 199.0,
+      "Human Resources": 199.0,
+      "Marketing": 297.0,
+      "Operations": 1000.0,
+      "Product": 498.0,
+      "Sales": 600.0
+    }
+  }
+}

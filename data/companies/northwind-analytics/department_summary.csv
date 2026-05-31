@@ -1,0 +1,9 @@
+department,total_spent,transaction_count,reasonable_transactions,flagged_transactions,geofence_flags,average_score_after_transactions
+Marketing,1035.23,9,8,1,1,79.0
+Finance,519.08,6,6,0,0,80.17
+Engineering,460.21,7,7,0,2,80.11
+Sales,309.13,2,2,0,1,80.07
+Operations,224.97,2,2,0,0,80.07
+Product,147.33,3,3,0,1,80.1
+Human Resources,103.86,1,1,0,0,80.05
+Customer Success,71.29,1,1,0,0,80.05

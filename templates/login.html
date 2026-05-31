@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block title %}Sign in — CashFlux{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <button type="button" class="theme-toggle theme-toggle--floating" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
+        <span class="theme-toggle-icon theme-toggle-icon-light"><i class="fa-solid fa-moon"></i></span>
+        <span class="theme-toggle-icon theme-toggle-icon-dark" hidden><i class="fa-solid fa-sun"></i></span>
+        <span class="theme-toggle-label">Dark mode</span>
+    </button>
+    <div class="auth-card">
+        <div class="auth-brand">
+            <div class="brand-mark">CF</div>
+            <h1>CashFlux</h1>
+            <p>Sign in to your company workspace</p>
+        </div>
+
+        {% if error %}
+        <div class="auth-error" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            <label class="auth-field">
+                <span>Email</span>
+                <input type="email" name="email" required autocomplete="email" placeholder="you@company.com">
+            </label>
+            <label class="auth-field">
+                <span>Password</span>
+                <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            </label>
+            <button type="submit" class="auth-submit">Sign in</button>
+        </form>
+
+        <p class="auth-switch">
+            New here?
+            <a href="{{ url_for('signup') }}">Create a company or join your team</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

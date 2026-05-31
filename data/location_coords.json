@@ -1,0 +1,198 @@
+{
+  "LAVAL, QC, CAN": {
+    "lat": 45.5571125,
+    "lng": -73.7211779
+  },
+  "EDMONTON, AB, CAN": {
+    "lat": 53.5462055,
+    "lng": -113.491241
+  },
+  "OKLAHOMA CITY, OK, USA": {
+    "lat": 35.4729886,
+    "lng": -97.5170536
+  },
+  "VIVIAN, SD, USA": {
+    "lat": 43.926951,
+    "lng": -100.3020925
+  },
+  "AUSTIN, TX, USA": {
+    "lat": 30.2711286,
+    "lng": -97.7436995
+  },
+  "TUMWATER, WA, USA": {
+    "lat": 47.0080655,
+    "lng": -122.910368
+  },
+  "PIERRE, SD, USA": {
+    "lat": 44.3683644,
+    "lng": -100.351136
+  },
+  "CARPIO, ND, USA": {
+    "lat": 48.442517,
+    "lng": -101.714606
+  },
+  "BAYTOWN, TX, USA": {
+    "lat": 29.7355047,
+    "lng": -94.9774274
+  },
+  "GREAT FALLS, MT, USA": {
+    "lat": 47.5048851,
+    "lng": -111.29189
+  },
+  "MINOT, ND, USA": {
+    "lat": 48.23251,
+    "lng": -101.296273
+  },
+  "MISSISSAUGA, ON, CAN": {
+    "lat": 43.5884727,
+    "lng": -79.643658
+  },
+  "HELENA, MT, USA": {
+    "lat": 46.5927425,
+    "lng": -112.036277
+  },
+  "SPOKANE, WA, USA": {
+    "lat": 47.6571934,
+    "lng": -117.42351
+  },
+  "BISMARCK, ND, USA": {
+    "lat": 46.808327,
+    "lng": -100.783739
+  },
+  "INDIANAPOLIS, IN, USA": {
+    "lat": 39.7683331,
+    "lng": -86.1583502
+  },
+  "WALCOTT, IA, USA": {
+    "lat": 41.5857364,
+    "lng": -90.7744597
+  },
+  "TOPEKA, KS, USA": {
+    "lat": 39.049011,
+    "lng": -95.677556
+  },
+  "TACOMA, WA, USA": {
+    "lat": 47.2455013,
+    "lng": -122.438329
+  },
+  "NASHVILLE, TN, USA": {
+    "lat": 36.1622767,
+    "lng": -86.7742984
+  },
+  "CHANNELVIEW, TX, USA": {
+    "lat": 29.7760599,
+    "lng": -95.1146533
+  },
+  "VALENTINE, NE, USA": {
+    "lat": 42.8746752,
+    "lng": -100.5506158
+  },
+  "SPRINGFIELD, IL, USA": {
+    "lat": 39.7990175,
+    "lng": -89.6439575
+  },
+  "BUTTE, MT, USA": {
+    "lat": 46.0131505,
+    "lng": -112.536508
+  },
+  "HOUSTON, TX, USA": {
+    "lat": 29.7589382,
+    "lng": -95.3676974
+  },
+  "DAWSON CREEK, BC, CAN": {
+    "lat": 55.7605306,
+    "lng": -120.2364453
+  },
+  "WHITEHORSE, YT, CAN": {
+    "lat": 60.721571,
+    "lng": -135.054932
+  },
+  "OAKLEY, KS, USA": {
+    "lat": 39.126385,
+    "lng": -100.855611
+  },
+  "ARLINGTON, WA, USA": {
+    "lat": 48.1896827,
+    "lng": -122.1288887
+  },
+  "BOISE, ID, USA": {
+    "lat": 43.6166163,
+    "lng": -116.200886
+  },
+  "BATH, NY, USA": {
+    "lat": 42.3370164,
+    "lng": -77.3177577
+  },
+  "SCOTT CITY, KS, USA": {
+    "lat": 38.4825192,
+    "lng": -100.907094
+  },
+  "TORONTO, ON, CAN": {
+    "lat": 43.6534817,
+    "lng": -79.3839347
+  },
+  "ANKENY, IA, USA": {
+    "lat": 41.7320796,
+    "lng": -93.605092
+  },
+  "Minot, ND, USA": {
+    "lat": 48.23251,
+    "lng": -101.296273
+  },
+  "CALGARY, AB, CAN": {
+    "lat": 51.0456064,
+    "lng": -114.057541
+  },
+  "POST FALLS, ID, USA": {
+    "lat": 47.7110106,
+    "lng": -116.9480877
+  },
+  "ST. ALBERT, AB, CAN": {
+    "lat": 53.633239,
+    "lng": -113.628845
+  },
+  "ELLENSBURG, WA, USA": {
+    "lat": 46.9970635,
+    "lng": -120.545122
+  },
+  "WATERTOWN, SD, USA": {
+    "lat": 44.899211,
+    "lng": -97.115289
+  },
+  "TOK, AK, USA": {
+    "lat": 63.3239985,
+    "lng": -143.0512183
+  },
+  "FARGO, ND, USA": {
+    "lat": 46.877229,
+    "lng": -96.789821
+  },
+  "VALLEY CITY, ND, USA": {
+    "lat": 46.923313,
+    "lng": -98.003155
+  },
+  "CARRINGTON, ND, USA": {
+    "lat": 47.44972,
+    "lng": -99.126224
+  },
+  "WADDY, KY, USA": {
+    "lat": 38.1370153,
+    "lng": -85.0743978
+  },
+  "LIBERAL, KS, USA": {
+    "lat": 37.0430812,
+    "lng": -100.920999
+  },
+  "STERLING, ND, USA": {
+    "lat": 46.813878,
+    "lng": -100.2915
+  },
+  "SANTO, TX, USA": {
+    "lat": 32.6037293,
+    "lng": -98.2141084
+  },
+  "SAINT PAUL, MN, USA": {
+    "lat": 44.9497487,
+    "lng": -93.0931028
+  }
+}

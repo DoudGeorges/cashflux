@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+.vscode/
+chats.db
+instance/
+mpc-hacks/brim-guardian/charts/output/
