@@ -1,0 +1,25 @@
+# Normalize line endings to LF on all platforms.
+* text=auto eol=lf
+
+# Ensure Python files are always LF.
+*.py text eol=lf
+
+# Binary files — don't touch.
+*.csv binary
+*.db binary
+*.sqlite binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.mp3 binary
+*.ico binary
+
+# Text data files — LF.
+*.json text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf

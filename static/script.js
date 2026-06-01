@@ -38,9 +38,9 @@ async function parseJsonResponse(res) {
     }
     const text = await res.text();
     if (/^\s*</.test(text)) {
-        if (res.status === 401) throw new Error('Session expired ? please sign in again.');
+        if (res.status === 401) throw new Error('Session expired. Please sign in again.');
         if (res.status === 403) throw new Error('You do not have permission to view this data.');
-        if (res.status === 404) throw new Error('API not found ? restart the app with python app.py.');
+        if (res.status === 404) throw new Error('API not found. Restart the app with python app.py.');
         throw new Error(`Server error (${res.status}). Restart the app and try again.`);
     }
     throw new Error(text.slice(0, 160) || `Request failed (${res.status})`);
@@ -74,8 +74,6 @@ const PASTEL_COLORS = [
     '#FFF0DB', // warm cream
 ];
 
-const ALERTS = [];
-const APPROVALS = [];
 let flagsLoaded = false;
 let budgetLoaded = false;
 let budgetPayload = null;
@@ -83,7 +81,6 @@ let budgetStale = true;
 let budgetSelectedDept = null;
 let settingsLoaded = false;
 let settingsBudgetData = null;
-let approvalsLoaded = false;
 let purchasesLoaded = false;
 let purchasesData = null;
 let purchasesFilters = {
@@ -109,7 +106,7 @@ function renderDepartmentList(departments, containerId) {
     el.innerHTML = (departments || []).map((d) => `
         <div class="guardian-item">
             <strong>${escapeHtml(d.department)}</strong>
-            <div>${escapeHtml(d.total_spent_fmt)} ? ${d.transaction_count} txns ? ${d.flagged_transactions} flagged</div>
+            <div>${escapeHtml(d.total_spent_fmt)} \u00b7 ${d.transaction_count} txns \u00b7 ${d.flagged_transactions} flagged</div>
             <div class="guardian-item-meta">Avg score ${Number(d.average_score).toFixed(1)}</div>
         </div>`).join('');
 }
@@ -161,7 +158,7 @@ function renderFlaggedTransactions(items, containerId = 'alerts-list') {
                         <td>${escapeHtml(f.vendor)}</td>
                         <td><strong>${escapeHtml(f.amount)}</strong></td>
                         <td>${escapeHtml(f.date)}</td>
-                        <td><small>${escapeHtml(f.reason)}${f.flag_type ? ` ? ${escapeHtml(f.flag_type.replace(/_/g, ' '))}` : ''}</small></td>
+                        <td><small>${escapeHtml(f.reason)}${f.flag_type ? ` \u00b7 ${escapeHtml(f.flag_type.replace(/_/g, ' '))}` : ''}</small></td>
                     </tr>`).join('')}
             </tbody>
         </table>`;
@@ -176,9 +173,9 @@ function renderOffenders(items) {
     }
     el.innerHTML = items.map((o, i) => `
         <div class="guardian-item">
-            <strong>#${i + 1} ${escapeHtml(o.employee)} ? ${escapeHtml(o.department)}</strong>
-            <div>${o.violations} violation(s) ? ${o.severe} high/severe${o.split_purchases ? ` ? ${o.split_purchases} split` : ''}</div>
-            <div class="guardian-item-meta">Score ${Number(o.credit_score).toFixed(1)} ? CA$${Number(o.total_amount).toLocaleString(undefined, { maximumFractionDigits: 0 })} flagged</div>
+            <strong>#${i + 1} ${escapeHtml(o.employee)} \u00b7 ${escapeHtml(o.department)}</strong>
+            <div>${o.violations} violation(s) \u00b7 ${o.severe} high/severe${o.split_purchases ? ` \u00b7 ${o.split_purchases} split` : ''}</div>
+            <div class="guardian-item-meta">Score ${Number(o.credit_score).toFixed(1)} \u00b7 CA$${Number(o.total_amount).toLocaleString(undefined, { maximumFractionDigits: 0 })} flagged</div>
         </div>`).join('');
 }
 
@@ -409,7 +406,7 @@ function renderBudgetSettingsEditor(data) {
     const listEl = document.getElementById('settings-budget-list');
     const quarterEl = document.getElementById('settings-budget-quarter');
     if (quarterEl && data?.quarter) {
-        quarterEl.textContent = `${data.quarter} ? set how much each department can spend (suggested amounts shown as hints)`;
+        quarterEl.textContent = `${data.quarter}: set how much each department can spend (suggested amounts shown as hints)`;
     }
     if (!listEl) return;
     const rows = data?.departments || [];
@@ -429,7 +426,7 @@ function renderBudgetSettingsEditor(data) {
                     data-dept-input="${escapeHtml(d.department)}"
                     value="${Number(d.budget)}"
                     placeholder="${Number(d.auto_budget)}">
-                <small>Suggested: ${escapeHtml(d.auto_budget_fmt)}${d.budget_source_quarter && d.budget_source_quarter !== data.quarter ? ` ? Using saved ${escapeHtml(d.budget_source_quarter)} cap` : ''}</small>
+                <small>Suggested: ${escapeHtml(d.auto_budget_fmt)}${d.budget_source_quarter && d.budget_source_quarter !== data.quarter ? ` \u00b7 Using saved ${escapeHtml(d.budget_source_quarter)} cap` : ''}</small>
             </label>
         </div>`).join('');
 }
@@ -448,7 +445,7 @@ async function saveBudgetSettings() {
     const status = document.getElementById('budget-save-status');
     const btn = document.getElementById('budget-save-btn');
     if (!settingsBudgetData?.quarter) return;
-    if (status) status.textContent = 'Saving?';
+    if (status) status.textContent = 'Saving\u2026';
     if (btn) btn.disabled = true;
     try {
         const res = await fetch('/api/settings/budgets', {
@@ -465,7 +462,7 @@ async function saveBudgetSettings() {
         budgetLoaded = false;
         budgetPayload = null;
         budgetStale = true;
-        if (status) status.textContent = 'Saved ? open Budgets to see updates';
+        if (status) status.textContent = 'Saved. Open Budgets to see updates';
         refreshNavBadges();
         if (currentViewKey === 'budget') {
             await loadBudget(true);
@@ -485,7 +482,7 @@ function resetBudgetSettingsForm() {
         if (row) input.value = String(row.auto_budget);
     });
     const status = document.getElementById('budget-save-status');
-    if (status) status.textContent = 'Reset to suggested ? click Save budgets to apply';
+    if (status) status.textContent = 'Reset to suggested. Click Save budgets to apply';
 }
 
 async function loadSettings(force = false, tab = 'budgets') {
@@ -533,7 +530,7 @@ function switchPolicyEditorTab(tab) {
 async function savePolicyEditor() {
     const status = document.getElementById('policy-save-status');
     const btn = document.getElementById('policy-save-btn');
-    if (status) status.textContent = 'Saving?';
+    if (status) status.textContent = 'Saving\u2026';
     if (btn) btn.disabled = true;
     try {
         const rules = collectPolicyFormRules();
@@ -545,7 +542,7 @@ async function savePolicyEditor() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Save failed');
-        if (status) status.textContent = 'Saved ? updating scans?';
+        if (status) status.textContent = 'Saved: updating scans\u2026';
         flagsLoaded = false;
         budgetLoaded = false;
         budgetPayload = null;
@@ -653,7 +650,7 @@ function moneyTick(v) {
 }
 
 function projectOptionLabel(p) {
-    return `${p.title} ? ${p.spent_fmt || formatCad(0)} spent of ${p.requested_amount_fmt} budget`;
+    return `${p.title}: ${p.spent_fmt || formatCad(0)} spent of ${p.requested_amount_fmt} budget`;
 }
 
 function buildChartConfig(chart) {
@@ -1045,14 +1042,14 @@ function renderAttachmentPreview() {
             <div class="attachment-file-icon"><i class="fa-solid fa-file-pdf"></i></div>
             <div class="attachment-chip-info">
                 <strong>${pendingAttachment.name}</strong>
-                <span>PDF ? ${formatFileSize(pendingAttachment.file.size)}</span>
+                <span>PDF (${formatFileSize(pendingAttachment.file.size)}</span>
             </div>`;
     } else {
         chip.innerHTML = `
             <img src="${pendingAttachment.previewUrl}" alt="Receipt preview">
             <div class="attachment-chip-info">
                 <strong>${pendingAttachment.name}</strong>
-                <span>Image ? ${formatFileSize(pendingAttachment.file.size)}</span>
+                <span>Image (${formatFileSize(pendingAttachment.file.size)}</span>
             </div>`;
     }
     preview.hidden = false;
@@ -1385,7 +1382,7 @@ function renderReviewQueue() {
     applyReviewFilter();
 
     if (!reviewFiltered.length) {
-        queue.innerHTML = '<div class="review-queue-empty guardian-item">Nothing waiting ? you\'re all caught up!</div>';
+        queue.innerHTML = '<div class="review-queue-empty guardian-item">Nothing waiting! You\'re all caught up.</div>';
         return;
     }
 
@@ -1400,7 +1397,7 @@ function renderReviewQueue() {
             </div>
             <strong class="review-queue-title">${escapeHtml(item.title)}</strong>
             <span class="review-queue-amount">${escapeHtml(item.amount)}</span>
-            <span class="review-queue-meta">${escapeHtml(item.employee)} ? ${escapeHtml(item.department)}</span>
+            <span class="review-queue-meta">${escapeHtml(item.employee)} \u00b7 ${escapeHtml(item.department)}</span>
             <p class="review-queue-preview">${escapeHtml(preview)}</p>
         </button>`;
     }).join('');
@@ -1423,7 +1420,7 @@ function renderReviewDetail(idx) {
                 <div>
                     <span class="review-kind review-kind--approval">Expense request</span>
                     <h3 class="panel-title">${escapeHtml(item.title)}</h3>
-                    <p class="panel-subtitle">${escapeHtml(item.employee)} ? ${escapeHtml(item.department)} ? ${escapeHtml(item.amount)}</p>
+                    <p class="panel-subtitle">${escapeHtml(item.employee)} \u00b7 ${escapeHtml(item.department)} \u00b7 ${escapeHtml(item.amount)}</p>
                 </div>
             </header>
             <div class="review-problems-block">
@@ -1441,7 +1438,7 @@ function renderReviewDetail(idx) {
                 <div>
                     <span class="review-kind review-kind--proposal">Project proposal</span>
                     <h3 class="panel-title">${escapeHtml(item.title)}</h3>
-                    <p class="panel-subtitle">${escapeHtml(item.employee)} ? ${escapeHtml(item.department)} ? ${escapeHtml(item.amount)} ? ${escapeHtml(item.budget_source_label || '')}</p>
+                    <p class="panel-subtitle">${escapeHtml(item.employee)} \u00b7 ${escapeHtml(item.department)} \u00b7 ${escapeHtml(item.amount)} \u00b7 ${escapeHtml(item.budget_source_label || '')}</p>
                 </div>
             </header>
             <div class="proposal-detail-desc">
@@ -1467,7 +1464,7 @@ function renderReviewDetail(idx) {
                 <div>
                     <span class="review-kind review-kind--fraud">Fraud flag</span>
                     <h3 class="panel-title">${escapeHtml(item.title)}</h3>
-                    <p class="panel-subtitle">${escapeHtml(item.employee)} ? ${escapeHtml(item.department)} ? ${escapeHtml(item.amount)} ? Score <strong class="${reviewRiskClass(item)}">${escapeHtml(item.risk_label)}</strong></p>
+                    <p class="panel-subtitle">${escapeHtml(item.employee)} \u00b7 ${escapeHtml(item.department)} \u00b7 ${escapeHtml(item.amount)} \u00b7 Score <strong class="${reviewRiskClass(item)}">${escapeHtml(item.risk_label)}</strong></p>
                 </div>
             </header>
             <div class="review-problems-block">
@@ -1479,7 +1476,7 @@ function renderReviewDetail(idx) {
                 <div class="fraud-field"><label>Date</label><div>${escapeHtml(item.timestamp || '?')}</div></div>
                 <div class="fraud-field"><label>Category</label><div>${escapeHtml(item.merchant_category || '?')}</div></div>
                 <div class="fraud-field"><label>Channel</label><div>${escapeHtml(item.channel || '?')}</div></div>
-                <div class="fraud-field"><label>Countries</label><div>${escapeHtml(item.cardholder_country || '?')} ? ${escapeHtml(item.merchant_country || '?')}</div></div>
+                <div class="fraud-field"><label>Countries</label><div>${escapeHtml(item.cardholder_country || '?')} \u00b7 ${escapeHtml(item.merchant_country || '?')}</div></div>
             </div>
             <footer class="review-actions">
                 <button type="button" class="btn-sm btn-approve" data-review-action="approve">Approve</button>
@@ -1561,7 +1558,7 @@ function renderProposalList(items) {
     const el = document.getElementById('proposal-list');
     if (!el) return;
     if (!items.length) {
-        el.innerHTML = '<div class="guardian-item">No proposals yet ? submit one using the form.</div>';
+        el.innerHTML = '<div class="guardian-item">No proposals yet. Submit one using the form.</div>';
         return;
     }
     el.innerHTML = items.map((p) => `
@@ -1570,8 +1567,8 @@ function renderProposalList(items) {
                 <strong>${escapeHtml(p.title)}</strong>
                 <span class="proposal-status ${proposalStatusClass(p.status)}">${escapeHtml(p.status)}</span>
             </div>
-            <div class="proposal-item-meta">${escapeHtml(p.requested_amount_fmt)} ? ${escapeHtml(p.budget_source_label || '?')} ? ${escapeHtml(p.quarter || '?')} ? ${escapeHtml(p.submitted_at?.slice(0, 10) || '')}</div>
-            ${p.status === 'approved' && p.spent_fmt ? `<div class="proposal-item-spend">${escapeHtml(p.spent_fmt)} spent ? ${escapeHtml(p.remaining_fmt)} left of budget</div>` : ''}
+            <div class="proposal-item-meta">${escapeHtml(p.requested_amount_fmt)} \u00b7 ${escapeHtml(p.budget_source_label || '?')} \u00b7 ${escapeHtml(p.quarter || '?')} \u00b7 ${escapeHtml(p.submitted_at?.slice(0, 10) || '')}</div>
+            ${p.status === 'approved' && p.spent_fmt ? `<div class="proposal-item-spend">${escapeHtml(p.spent_fmt)} spent \u00b7 ${escapeHtml(p.remaining_fmt)} left of budget</div>` : ''}
             <p class="proposal-item-desc">${escapeHtml(p.description)}</p>
             ${p.decision_note ? `<p class="proposal-item-note"><strong>Note:</strong> ${escapeHtml(p.decision_note)}</p>` : ''}
         </article>
@@ -1594,7 +1591,7 @@ async function loadProposals(force = false) {
         const budget = await hintRes.json();
         if (!mineRes.ok) throw new Error(items.error || 'Failed to load proposals');
         if (hint && hintRes.ok) {
-            hint.textContent = `${budget.department} ? ${budget.quarter}: ${budget.spent_fmt} spent of ${budget.budget_fmt} (${budget.remaining_fmt} left)`;
+            hint.textContent = `${budget.department} \u00b7 ${budget.quarter}: ${budget.spent_fmt} spent of ${budget.budget_fmt} (${budget.remaining_fmt} left)`;
         } else if (hint) {
             hint.textContent = 'Department budget info unavailable.';
         }
@@ -1708,7 +1705,7 @@ function renderTripReportSelectedPurchases() {
     chipsEl.innerHTML = keys.map((key) => {
         const t = tripReportTransactions.find((row) => row.key === key);
         if (!t) return '';
-        const label = `${t.vendor} ? ${t.date} ? ${t.amount}`;
+        const label = `${t.vendor} \u00b7 ${t.date} \u00b7 ${t.amount}`;
         return `
             <span class="proposal-colleague-chip colleague-picker-chip${t.flagged ? ' trip-purchase-chip--flagged' : ''}">
                 <span>${escapeHtml(label)}</span>
@@ -1734,7 +1731,7 @@ function renderTripReportPurchaseDropdown(query = '') {
     dropdown.innerHTML = items.map((t) => `
         <button type="button" class="colleague-picker-option${t.flagged ? ' trip-purchase-option--flagged' : ''}" role="option" data-purchase-key="${escapeHtml(t.key)}">
             <span class="colleague-picker-option-name">${escapeHtml(t.vendor)}</span>
-            <span class="colleague-picker-option-dept">${escapeHtml(t.date)} ? ${escapeHtml(t.category)} ? ${escapeHtml(t.amount)}${t.flagged ? ' ? Flagged' : ''}</span>
+            <span class="colleague-picker-option-dept">${escapeHtml(t.date)} \u00b7 ${escapeHtml(t.category)} \u00b7 ${escapeHtml(t.amount)}${t.flagged ? ' ? Flagged' : ''}</span>
         </button>
     `).join('');
     dropdown.hidden = false;
@@ -1866,7 +1863,7 @@ function renderTripReportList(items) {
                 <strong>${escapeHtml(r.trip_name)}</strong>
                 <span class="proposal-status ${tripReportStatusClass(r.status)}">${escapeHtml(tripReportStatusLabel(r.status))}</span>
             </div>
-            <div class="proposal-item-meta">${escapeHtml(r.total_formatted)} ? ${escapeHtml(String(r.transaction_count))} purchases ? ${escapeHtml(r.date_range || '')} ? ${escapeHtml(r.submitted_at?.slice(0, 10) || '')}${r.spending_purpose === 'project' && r.project_title ? ` ? ${escapeHtml(r.project_title)}` : r.spending_purpose === 'personal' ? ' ? Personal' : ''}</div>
+            <div class="proposal-item-meta">${escapeHtml(r.total_formatted)} \u00b7 ${escapeHtml(String(r.transaction_count))} purchases ? ${escapeHtml(r.date_range || '')} \u00b7 ${escapeHtml(r.submitted_at?.slice(0, 10) || '')}${r.spending_purpose === 'project' && r.project_title ? ` \u00b7 ${escapeHtml(r.project_title)}` : r.spending_purpose === 'personal' ? ' \u00b7 Personal' : ''}</div>
             ${(r.tags || []).length ? `<div class="report-tags">${r.tags.slice(0, 4).map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
             <p class="proposal-item-desc">${escapeHtml(r.purpose || '')}</p>
             ${r.decision_note ? `<p class="proposal-item-note"><strong>Note:</strong> ${escapeHtml(r.decision_note)}</p>` : ''}
@@ -1898,7 +1895,7 @@ async function openEmployeeTripReportModal(reportId) {
             <tr><td>${escapeHtml(t.date)}</td><td>${escapeHtml(t.vendor)}</td><td>${escapeHtml(t.category)}</td><td>${escapeHtml(t.amount)}</td></tr>
         `).join('');
         body.innerHTML = `
-            <p><strong>${escapeHtml(r.employee)}</strong> ? ${escapeHtml(r.department)} ? ${escapeHtml(r.date_range || '')}</p>
+            <p><strong>${escapeHtml(r.employee)}</strong> \u00b7 ${escapeHtml(r.department)} \u00b7 ${escapeHtml(r.date_range || '')}</p>
             ${r.spending_purpose === 'project' && r.project_title ? `<p><strong>Project:</strong> ${escapeHtml(r.project_title)}</p>` : r.spending_purpose === 'personal' ? '<p><strong>Personal</strong> travel</p>' : ''}
             ${r.purpose ? `<p>${escapeHtml(r.purpose)}</p>` : ''}
             <p>${escapeHtml(r.policy_summary || '')}</p>
@@ -2004,7 +2001,7 @@ function setupTripReportForm() {
             resetTripReportPurchasePicker();
             syncTripReportFormPurpose();
             await refreshTripReportProjectSelect();
-            if (statusEl) statusEl.textContent = 'Submitted ? waiting for finance review.';
+            if (statusEl) statusEl.textContent = 'Submitted. Waiting for finance review.';
             tripReportsLoaded = false;
             tripReportTransactions = [];
             await loadTripReports(true);
@@ -2191,14 +2188,14 @@ function renderBudgetProjection(fc) {
 
     if (titleEl) {
         titleEl.textContent = fc.department
-            ? `Budget projection ? ${fc.department}`
+            ? `Budget projection: ${fc.department}`
             : 'Budget projection';
     }
     if (subtitleEl) {
         const parts = [fc.quarter || 'This quarter', `${fc.spent_fmt || ''} spent so far`.trim()];
         if (fc.weekly_burn_fmt) parts.push(`${fc.weekly_burn_fmt}/wk burn`);
         if (fc.projected_eoq_fmt) parts.push(`${fc.projected_eoq_fmt} projected EoQ`);
-        subtitleEl.textContent = parts.filter(Boolean).join(' ? ');
+        subtitleEl.textContent = parts.filter(Boolean).join(' \u00b7 ');
     }
     if (footnoteEl) {
         const today = fc.today_date ? `through ${fc.today_date}` : (fc.current_week_label ? `through week of ${fc.current_week_label}` : 'to date');
@@ -2443,23 +2440,6 @@ async function loadBudget(force = false) {
     }
 }
 
-async function loadApprovals(force = false) {
-    reviewLoaded = force ? false : reviewLoaded;
-    await loadReview(force);
-}
-
-async function handleApproval(itemKey, approved) {
-    const res = await fetch('/api/review/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: `approval:${itemKey}`, action: approved ? 'approve' : 'deny' }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Decision failed');
-    reviewLoaded = false;
-    await loadReview(true);
-    refreshNavBadges();
-}
 
 function renderTeamRoster(employees) {
     const el = document.getElementById('employee-roster');
@@ -2472,7 +2452,7 @@ function renderTeamRoster(employees) {
             <div class="credit-avatar credit-avatar--team">${initials}</div>
             <div class="team-info credit-info">
                 <button type="button" class="emp-link credit-name" data-employee="${e.name}">${e.name}</button>
-                <div class="roster-meta">${e.employee_id} ? ${escapeHtml(e.department || '?')} ? ${e.transaction_count} txns ? ${e.total_spend_fmt}</div>
+                <div class="roster-meta">${e.employee_id} \u00b7 ${escapeHtml(e.department || '-')} \u00b7 ${e.transaction_count} txns \u00b7 ${e.total_spend_fmt}</div>
                 <div class="credit-bar"><div class="credit-bar-fill" style="width:${e.credit_score}%;background:${scoreBarColor(e.credit_score)}"></div></div>
             </div>
             <div class="credit-score ${scoreClass(e.credit_score)}">${formatCreditScore(e.credit_score)}</div>
@@ -2501,7 +2481,7 @@ function renderActivityFeed(recent) {
 }
 
 function renderTxTable(recent) {
-    /* Home dashboard preview only ? full list uses renderPurchasesTable */
+    /* Home dashboard preview only (full list uses renderPurchasesTable) */
     const el = document.getElementById('tx-table');
     if (!el || purchasesLoaded) return;
     if (!recent?.length) {
@@ -2700,7 +2680,7 @@ function setReceiptsPageFile(file) {
     } else if (previewImg) {
         previewImg.hidden = true;
     }
-    if (meta) meta.textContent = `${file.name} ? ${formatFileSize(file.size)}`;
+    if (meta) meta.textContent = `${file.name} \u00b7 ${formatFileSize(file.size)}`;
     document.getElementById('receipts-scan-btn')?.removeAttribute('disabled');
     document.getElementById('receipts-status').textContent = '';
 }
@@ -2749,10 +2729,10 @@ function renderReceiptsScanResult(result) {
     if (matchBanner) {
         if (matched) {
             matchBanner.className = 'receipts-match-banner receipts-match-banner--ok';
-            matchBanner.innerHTML = `<i class="fa-solid fa-circle-check"></i> Matched to transaction ? ${escapeHtml(matched.merchant_name || '')} ? ${moneyTick(matched.amount_cad)} ? ${escapeHtml(matched.transaction_date || '')}`;
+            matchBanner.innerHTML = `<i class="fa-solid fa-circle-check"></i> Matched to transaction \u00b7 ${escapeHtml(matched.merchant_name || '')} \u00b7 ${moneyTick(matched.amount_cad)} \u00b7 ${escapeHtml(matched.transaction_date || '')}`;
         } else {
             matchBanner.className = 'receipts-match-banner receipts-match-banner--info';
-            matchBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> No card transaction matched ? review the details below and save if they look correct';
+            matchBanner.innerHTML = '<i class="fa-solid fa-circle-info"></i> No card transaction matched. Review the details below and save if they look correct';
         }
     }
 
@@ -2852,8 +2832,8 @@ async function loadReceiptsHistory() {
                 <strong>${escapeHtml(d.merchant || 'Receipt')}</strong>
                 <span class="receipts-purpose-tag receipts-purpose-tag--${escapeHtml(r.spending_purpose || d.spending_purpose || 'project')}">${escapeHtml(purpose)}</span>
                 ${projectLine}
-                <span>${escapeHtml(d.date || '')} ? ${escapeHtml(formatCad(d.amount))}</span>
-                <span class="receipts-history-meta">${escapeHtml(r.employee_name || '')} ? ${escapeHtml(r.confirmed_at || '')}</span>
+                <span>${escapeHtml(d.date || '')} \u00b7 ${escapeHtml(formatCad(d.amount))}</span>
+                <span class="receipts-history-meta">${escapeHtml(r.employee_name || '')} \u00b7 ${escapeHtml(r.confirmed_at || '')}</span>
             </div>`;
         }).join('');
     } catch (err) {
@@ -3025,7 +3005,7 @@ async function openEmployeeModal(name) {
         if (!res.ok) throw new Error(data.error || 'Failed to load employee');
 
         document.getElementById('modal-employee-meta').textContent =
-            `${data.employee_id} ? ${escapeHtml(data.department || '?')} ? Credit score ${formatCreditScore(data.credit_score)}`;
+            `${data.employee_id} \u00b7 ${escapeHtml(data.department || '?')} \u00b7 Credit score ${formatCreditScore(data.credit_score)}`;
         document.getElementById('modal-stats').innerHTML = `
             <div class="modal-stat"><span>Total</span><strong>${data.total_spend_fmt}</strong></div>
             <div class="modal-stat"><span>Txns</span><strong>${data.transaction_count}</strong></div>
@@ -3152,7 +3132,7 @@ async function downloadPdfReport(names) {
         const a = document.createElement('a');
         a.href = url;
         a.download = filenameFromDisposition(res.headers.get('Content-Disposition'))
-            || `mpc-spending-${names.length > 1 ? 'comparison' : names[0].toLowerCase().replace(/\s+/g, '-')}.pdf`;
+            || `cashflux-spending-${names.length > 1 ? 'comparison' : names[0].toLowerCase().replace(/\s+/g, '-')}.pdf`;
         a.click();
         URL.revokeObjectURL(url);
     } catch (e) {
@@ -3340,11 +3320,11 @@ const PAGE_TITLES = {
 };
 
 const PAGE_SUBTITLES = {
-    overview: 'Pick what you want to do ? everything is one click away.',
+    overview: 'Pick what you want to do: everything is one click away.',
     people: 'Tap a name for details. Check boxes to compare people.',
     activity: 'Search, filter, and sort every purchase.',
     receipts: 'Scan receipts, match to transactions, and save confirmations.',
-    proposals: 'Request budget for a project ? your manager or CEO will review it.',
+    proposals: 'Request budget for a project. Your manager or CEO will review it.',
     'trip-reports': 'Bundle travel purchases and submit them for reimbursement review.',
     budget: 'See if departments are running out of money.',
     map: 'Where purchases happened around the world.',
@@ -3416,10 +3396,6 @@ function setupQuickNavCards() {
             navigateTo(card.dataset.insight, tab ? { tab } : {});
         });
     });
-}
-
-function setupWorkflowStrip() {
-    /* workflow strip removed ? sidebar + home actions are enough */
 }
 
 function setupSidebarToggle() {
@@ -3669,7 +3645,7 @@ function renderCityMarkers(locations, map) {
             content: `
                 <div class="map-info">
                     <strong>${escapeHtml(loc.location)}</strong>
-                    <div>${merchantCount} merchants ? ${loc.transactions} transactions</div>
+                    <div>${merchantCount} merchants \u00b7 ${loc.transactions} transactions</div>
                     <div>${escapeHtml(loc.spend_fmt)} total spend</div>
                     ${loc.flagged ? `<div class="map-info-flag">${loc.flagged} flagged</div>` : ''}
                     <div class="map-info-team">${escapeHtml(loc.employees.slice(0, 4).join(', '))}${loc.employees.length > 4 ? '?' : ''}</div>
@@ -3711,10 +3687,10 @@ function renderMerchantMarkers(merchants, map) {
             content: `
                 <div class="map-info">
                     <strong>${escapeHtml(item.vendor)}</strong>
-                    <div>${escapeHtml(item.employee || '')}${item.department ? ` ? ${escapeHtml(item.department)}` : ''}</div>
+                    <div>${escapeHtml(item.employee || '')}${item.department ? ` \u00b7 ${escapeHtml(item.department)}` : ''}</div>
                     ${item.street_address ? `<div>${escapeHtml(item.street_address)}</div>` : ''}
-                    <div>${escapeHtml(item.location)}${item.postal ? ` ? ${escapeHtml(item.postal)}` : ''}</div>
-                    <div>${escapeHtml(item.spend_fmt)} ? ${escapeHtml(item.date || '')}</div>
+                    <div>${escapeHtml(item.location)}${item.postal ? ` \u00b7 ${escapeHtml(item.postal)}` : ''}</div>
+                    <div>${escapeHtml(item.spend_fmt)} \u00b7 ${escapeHtml(item.date || '')}</div>
                     ${item.flagged ? `<div class="map-info-flag">Flagged purchase</div>` : ''}
                 </div>`,
         });
@@ -3761,7 +3737,7 @@ function updateMapSummary(data, merchantMode) {
 
     if (merchantMode) {
         summaryEl.textContent =
-            `${data.plotted} purchases in view ? ${data.total_in_view} total here ? ${data.total_merchants} mapped purchases`;
+            `${data.plotted} purchases in view \u00b7 ${data.total_in_view} total here \u00b7 ${data.total_merchants} mapped purchases`;
         if (noteEl) {
             noteEl.textContent = 'Each circle is one purchase at its merchant street address. Red = flagged. More addresses geocode as you explore the map.';
         }
@@ -3769,7 +3745,7 @@ function updateMapSummary(data, merchantMode) {
     }
 
     summaryEl.textContent =
-        `${data.plotted} areas ? ${data.mapped_spend_fmt} mapped spend ? ${data.total_locations} locations in data`;
+        `${data.plotted} areas \u00b7 ${data.mapped_spend_fmt} mapped spend \u00b7 ${data.total_locations} locations in data`;
     if (noteEl) {
         noteEl.textContent = 'Zoom in to see a circle for each purchase at its street address from the CSV.';
     }
@@ -4004,7 +3980,6 @@ function setupInsightTabs() {
     setupSidebarNav();
     setupBudgetDeptList();
     setupQuickNavCards();
-    setupWorkflowStrip();
     setupSectionSubnav();
     setupReviewWorkspace();
     setupProposalForm();
@@ -4422,8 +4397,8 @@ function setupVoiceAssistant() {
         voiceRecognition.onerror = (event) => {
             voiceListening = false;
             const msg = event.error === 'not-allowed'
-                ? 'Microphone blocked ? allow access in browser settings.'
-                : 'Could not hear you ? try again.';
+                ? 'Microphone blocked. Allow access in browser settings.'
+                : 'Could not hear you. Try again.';
             updateVoiceUiState(msg);
         };
 

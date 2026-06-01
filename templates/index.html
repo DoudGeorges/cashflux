@@ -1,3571 +1,2272 @@
-{% extends "layout.html" %}
-
-
-
-
-
-
-
-{% block content %}
-
-
-
-<div class="app-shell {% if not is_admin_view %}app-shell--employee{% endif %}" data-admin="{{ '1' if is_admin_view else '0' }}" data-maps-key="{{ google_maps_api_key }}">
-
-
-
-    <aside class="sidebar" id="sidebar">
-
-
-
-        <div class="sidebar-brand">
-
-
-
-            <div class="brand-mark" id="brand-mark" title="CashFlux">CF</div>
-
-
-
-            <span class="brand-name">CashFlux</span>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        <nav class="sidebar-nav" role="tablist" aria-label="Main navigation">
-
-
-
-            <div class="nav-group">
-
-
-
-                <span class="nav-group-label">Start</span>
-
-
-
-                <button type="button" class="nav-item nav-item--active" data-insight="overview">
-
-
-
-                    <i class="fa-solid fa-house"></i>
-
-
-
-                    <span>Home</span>
-
-
-
-                </button>
-
-
-
-            </div>
-
-
-
-
-
-
-
-            <div class="nav-group">
-
-
-
-                <span class="nav-group-label">Money</span>
-
-
-
-                {% if is_admin_view %}
-
-
-
-                <button type="button" class="nav-item" data-insight="budget">
-
-
-
-                    <i class="fa-solid fa-wallet"></i>
-
-
-
-                    <span>Budgets</span>
-
-
-
-                </button>
-
-
-
-                {% endif %}
-
-
-
-                <button type="button" class="nav-item" data-insight="activity">
-
-
-
-                    <i class="fa-solid fa-receipt"></i>
-
-
-
-                    <span>{% if is_admin_view %}All purchases{% else %}My purchases{% endif %}</span>
-
-
-
-                </button>
-
-
-
-                {% if not is_admin_view %}
-
-
-
-                <button type="button" class="nav-item" data-insight="receipts">
-
-
-
-                    <i class="fa-solid fa-camera"></i>
-
-
-
-                    <span>Receipts</span>
-
-
-
-                </button>
-
-
-
-                {% endif %}
-
-
-
-                {% if not is_admin_view %}
-
-
-
-                <button type="button" class="nav-item" data-insight="proposals">
-
-
-
-                    <i class="fa-solid fa-folder-open"></i>
-
-
-
-                    <span>My projects</span>
-
-
-
-                </button>
-
-
-
-                <button type="button" class="nav-item" data-insight="trip-reports">
-
-
-
-                    <i class="fa-solid fa-suitcase-rolling"></i>
-
-
-
-                    <span>Travel reports</span>
-
-
-
-                </button>
-
-
-
-                {% endif %}
-
-
-
-                {% if is_admin_view %}
-
-
-
-                <button type="button" class="nav-item" data-insight="people">
-
-
-
-                    <i class="fa-solid fa-users"></i>
-
-
-
-                    <span>People</span>
-
-
-
-                </button>
-
-
-
-                {% endif %}
-
-
-
-                <button type="button" class="nav-item" data-insight="map">
-
-
-
-                    <i class="fa-solid fa-map-location-dot"></i>
-
-
-
-                    <span>Map</span>
-
-
-
-                </button>
-
-
-
-            </div>
-
-
-
-
-
-
-
-            {% if is_admin_view %}
-
-
-
-            <div class="nav-group">
-
-
-
-                <span class="nav-group-label">Needs attention</span>
-
-
-
-                <button type="button" class="nav-item" data-insight="alerts" title="Purchases that broke spending rules">
-
-
-
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-
-
-
-                    <span>Policy flags</span>
-
-
-
-                    <span class="nav-badge" id="nav-badge-flags" hidden></span>
-
-
-
-                </button>
-
-
-
-                <button type="button" class="nav-item" data-insight="approvals" title="Approve spending requests and fraud alerts">
-
-
-
-                    <i class="fa-solid fa-clipboard-check"></i>
-
-
-
-                    <span>Review queue</span>
-
-
-
-                    <span class="nav-badge nav-badge--warn" id="nav-badge-approvals" hidden></span>
-
-
-
-                </button>
-
-
-
-            </div>
-
-
-
-            {% endif %}
-
-
-
-
-
-
-
-            <div class="nav-group">
-
-
-
-                <span class="nav-group-label">Ask AI</span>
-
-
-
-                <button type="button" class="nav-item" data-insight="chat" title="Ask questions about spending in plain English">
-
-
-
-                    <i class="fa-solid fa-comments"></i>
-
-
-
-                    <span>Friday assistant</span>
-
-
-
-                </button>
-
-
-
-            </div>
-
-
-
-
-
-
-
-            {% if is_admin_view %}
-
-
-
-            <div class="nav-group">
-
-
-
-                <span class="nav-group-label">Setup</span>
-
-
-
-                <button type="button" class="nav-item" data-insight="settings">
-
-
-
-                    <i class="fa-solid fa-gear"></i>
-
-
-
-                    <span>Settings</span>
-
-
-
-                </button>
-
-
-
-            </div>
-
-
-
-            {% endif %}
-
-
-
-        </nav>
-
-
-
-
-
-
-
-        <div class="sidebar-footer">
-
-
-
-            <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
-
-
-
-                <span class="theme-toggle-icon theme-toggle-icon-light"><i class="fa-solid fa-moon"></i></span>
-
-
-
-                <span class="theme-toggle-icon theme-toggle-icon-dark" hidden><i class="fa-solid fa-sun"></i></span>
-
-
-
-                <span class="theme-toggle-label">Dark mode</span>
-
-
-
-            </button>
-
-
-
-            <div class="sidebar-user">
-
-
-
-                <div class="sidebar-user-avatar">{{ (current_user.display_name or '?')[:2]|upper }}</div>
-
-
-
-                <div class="sidebar-user-info">
-
-
-
-                    <strong>{{ current_user.display_name }}</strong>
-
-
-
-                    <span>{{ current_user.email }}</span>
-
-
-
-                    {% if is_admin_view and current_user.company %}
-
-
-
-                    <span class="sidebar-company-code">Company code: <strong>{{ current_user.company.slug }}</strong></span>
-
-
-
-                    {% endif %}
-
-
-
-                </div>
-
-
-
-                <span class="sidebar-user-badge">{{ current_user.role|replace('_', ' ')|title }}</span>
-
-
-
-            </div>
-
-
-
-            <form method="post" action="{{ url_for('logout') }}" class="sidebar-logout-form">
-
-
-
-                <button type="submit" class="sidebar-logout-btn">Sign out</button>
-
-
-
-            </form>
-
-
-
-        </div>
-
-
-
-    </aside>
-
-
-
-
-
-
-
-    <div class="main-frame">
-
-
-
-        <header class="page-header">
-
-
-
-            <button type="button" class="btn-icon btn-menu" id="sidebar-toggle" aria-label="Open menu">
-
-
-
-                <i class="fa-solid fa-bars"></i>
-
-
-
-            </button>
-
-
-
-            <div class="page-header-inner">
-
-
-
-                <div class="page-header-text">
-
-
-
-                    <h1 class="page-title" id="page-title">Home</h1>
-
-
-
-                    <p class="page-subtitle" id="page-subtitle">Explore spending, review approvals, and catch policy issues.</p>
-
-
-
-                </div>
-
-
-
-                <div class="page-header-actions">
-
-
-
-                    <button type="button" class="btn-header" id="quick-jump-btn" title="Find a page (Ctrl+K)">
-
-
-
-                        <i class="fa-solid fa-magnifying-glass"></i>
-
-
-
-                        <span>Find a page</span>
-
-
-
-                        <kbd>Ctrl K</kbd>
-
-
-
-                    </button>
-
-
-
-                </div>
-
-
-
-            </div>
-
-
-
-        </header>
-
-
-
-
-
-
-
-        <main class="main-content">
-
-
-
-            <div class="main-scroll">
-
-
-
-                <div id="insight-overview" class="insight-view insight-view--active">
-
-
-
-                    <div class="guardian-stat-row stat-row" id="dashboard-stats"></div>
-
-
-
-                    {% if is_admin_view %}
-
-
-
-                    <div class="approver-inbox panel-card" id="approver-inbox" hidden>
-
-
-
-                        <div class="approver-inbox-body">
-
-
-
-                            <i class="fa-solid fa-inbox approver-inbox-icon"></i>
-
-
-
-                            <div>
-
-
-
-                                <strong id="approver-inbox-title">Items waiting for your review</strong>
-
-
-
-                                <p id="approver-inbox-detail">Open the Review queue to approve requests and fraud flags.</p>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                        <button type="button" class="btn-sm btn-dark" id="approver-inbox-btn" data-insight="approvals">Open Review queue</button>
-
-
-
-                    </div>
-
-
-
-                    {% endif %}
-
-
-
-
-
-
-
-                    {% if not is_admin_view %}
-
-
-
-                    <div class="page-guide page-guide--compact" id="home-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-circle-info"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Your spending hub</strong>
-
-
-
-                            <p>See your purchases, upload receipts, and ask <strong>Friday</strong> questions like "How much did I spend on meals this month?"</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    {% endif %}
-
-
-
-
-
-
-
-                    <h2 class="section-heading">{% if is_admin_view %}Quick actions{% else %}Quick actions{% endif %}</h2>
-
-
-
-                    <div class="home-actions home-actions--primary" id="quick-nav">
-
-
-
-                        <button type="button" class="home-action-card" data-insight="chat">
-
-
-
-                            <i class="fa-solid fa-comments"></i>
-
-
-
-                            <strong>Ask Friday</strong>
-
-
-
-                            <span>Questions in plain English</span>
-
-
-
-                        </button>
-
-
-
-                        {% if is_admin_view %}
-
-
-
-                        <button type="button" class="home-action-card" data-insight="budget">
-
-
-
-                            <i class="fa-solid fa-wallet"></i>
-
-
-
-                            <strong>Check budgets</strong>
-
-
-
-                            <span>Department caps, burn rate &amp; forecasts</span>
-
-
-
-                        </button>
-
-
-
-                        <button type="button" class="home-action-card" data-insight="alerts">
-
-
-
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-
-
-
-                            <strong>Policy flags</strong>
-
-
-
-                            <span>Purchases that broke spending rules</span>
-
-
-
-                        </button>
-
-
-
-                        <button type="button" class="home-action-card" data-insight="approvals">
-
-
-
-                            <i class="fa-solid fa-clipboard-check"></i>
-
-
-
-                            <strong>Review queue</strong>
-
-
-
-                            <span>Approve requests, trips &amp; fraud in one tap</span>
-
-
-
-                        </button>
-
-
-
-                        {% else %}
-
-
-
-                        <button type="button" class="home-action-card" data-insight="activity">
-
-
-
-                            <i class="fa-solid fa-receipt"></i>
-
-
-
-                            <strong>My purchases</strong>
-
-
-
-                            <span>Every transaction on your card</span>
-
-
-
-                        </button>
-
-
-
-                        <button type="button" class="home-action-card" data-insight="map">
-
-
-
-                            <i class="fa-solid fa-map"></i>
-
-
-
-                            <strong>Where I spent</strong>
-
-
-
-                            <span>Map of your purchases</span>
-
-
-
-                        </button>
-
-
-
-                        <button type="button" class="home-action-card" data-insight="proposals">
-
-
-
-                            <i class="fa-solid fa-folder-open"></i>
-
-
-
-                            <strong>My projects</strong>
-
-
-
-                            <span>Request budget for a new project</span>
-
-
-
-                        </button>
-
-
-
-                        <button type="button" class="home-action-card" data-insight="trip-reports">
-
-
-
-                            <i class="fa-solid fa-suitcase-rolling"></i>
-
-
-
-                            <strong>Travel reports</strong>
-
-
-
-                            <span>Bundle travel purchases for reimbursement</span>
-
-
-
-                        </button>
-
-
-
-                        {% endif %}
-
-
-
-                    </div>
-
-
-
-                    {% if is_admin_view %}
-
-
-
-                    <div class="home-actions home-actions--secondary">
-
-
-
-                        <button type="button" class="home-action-link" data-insight="people"><i class="fa-solid fa-users"></i> People</button>
-
-
-
-                        <button type="button" class="home-action-link" data-insight="activity"><i class="fa-solid fa-receipt"></i> All purchases</button>
-
-
-
-                        <button type="button" class="home-action-link" data-insight="map"><i class="fa-solid fa-map"></i> Map</button>
-
-
-
-                    </div>
-
-
-
-                    {% endif %}
-
-
-
-
-
-
-
-                    <h2 class="section-heading">{% if is_admin_view %}Quick look{% else %}My spending{% endif %}</h2>
-
-
-
-                    <div class="dashboard-split">
-
-
-
-                        <div class="panel-card panel-card--wide">
-
-
-
-                            <h3 class="panel-title">{% if is_admin_view %}Where the money went{% else %}Where my money went{% endif %}</h3>
-
-
-
-                            <div class="overview-grid">
-
-
-
-                                <div class="dash-chart-block dash-chart-block--pink">
-
-
-
-                                    <h4>{% if is_admin_view %}Top spenders{% else %}By category{% endif %}</h4>
-
-
-
-                                    <div class="chart-wrap chart-wrap--md"><canvas id="chart-dept"></canvas></div>
-
-
-
-                                </div>
-
-
-
-                                <div class="dash-chart-block dash-chart-block--blue">
-
-
-
-                                    <h4>Month by month (cumulative)</h4>
-
-
-
-                                    <div class="chart-wrap chart-wrap--md"><canvas id="chart-month"></canvas></div>
-
-
-
-                                </div>
-
-
-
-                                <div class="dash-chart-block dash-chart-block--mint dash-chart-block--wide">
-
-
-
-                                    <h4>{% if is_admin_view %}By department{% else %}By department (my spend){% endif %}</h4>
-
-
-
-                                    <div class="guardian-list dashboard-dept-list" id="dashboard-departments"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel-card">
-                            <div class="panel-header-row">
-                                <h3 class="panel-title">{% if is_admin_view %}Latest purchases{% else %}My latest purchases{% endif %}</h3>
-                                <button type="button" class="panel-link" data-insight="activity">See all</button>
-                            </div>
-                            <div class="activity-feed" id="activity-feed"></div>
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-people" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-users"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Who spends what</strong>
-
-
-
-                            <p>Click a name for spending history and peer benchmarks. Check boxes to compare two or more people side by side.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <div class="compare-toolbar" id="compare-toolbar">
-
-
-
-                        <span class="compare-label">Pick people to compare</span>
-
-
-
-                        <div class="compare-chips" id="compare-chips"></div>
-
-
-
-                        <button type="button" class="btn-sm btn-compare" id="btn-run-compare" disabled>Compare</button>
-
-
-
-                        <button type="button" class="btn-sm btn-pdf" id="btn-compare-pdf" disabled title="Generate PDF report for selected people">
-
-
-
-                            Report Generation
-
-
-
-                        </button>
-
-
-
-                    </div>
-
-
-
-                    <div class="people-grid">
-
-
-
-                        <div class="panel-card">
-
-
-
-                            <h3 class="panel-title">Everyone</h3>
-
-
-
-                            <div class="team-list" id="employee-roster"></div>
-
-
-
-                        </div>
-
-
-
-                        <div class="panel-card">
-
-
-
-                            <h3 class="panel-title">Who spent the most</h3>
-
-
-
-                            <div class="chart-wrap chart-wrap--md"><canvas id="chart-emp"></canvas></div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-budget" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-wallet"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Department budgets</strong>
-
-
-
-                            <p><span class="ux-legend ux-legend--ok">Green</span> = on track ? <span class="ux-legend ux-legend--warn">Yellow</span> = watch closely ? <span class="ux-legend ux-legend--bad">Red</span> = over cap or projected to exceed. Change limits in <button type="button" class="page-help-link" data-insight="settings" data-settings-tab="budgets">Settings</button>.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <div class="budget-hero panel-card" id="budget-hero" hidden></div>
-
-
-
-                    <div class="budget-stat-row" id="budget-summary-stats"></div>
-
-
-
-                    <div class="panel-card budget-charts-card">
-
-
-
-                        <h3 class="panel-title">Overview</h3>
-
-
-
-                        <p class="panel-subtitle" id="budget-chart-subtitle">Spent vs allowed this quarter</p>
-
-
-
-                        <div class="budget-charts-row">
-
-
-
-                            <div class="chart-wrap chart-wrap--budget"><canvas id="chart-budget-bar"></canvas></div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <div class="panel-card budget-projection-card" id="budget-projection-card" hidden>
-
-
-
-                        <div class="budget-projection-head">
-
-
-
-                            <div>
-
-
-
-                                <span class="budget-projection-badge">Projection</span>
-
-
-
-                                <h3 class="panel-title" id="budget-forecast-title">Budget projection</h3>
-
-
-
-                                <p class="panel-subtitle" id="budget-forecast-subtitle"></p>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                        <div class="chart-wrap chart-wrap--budget-projection">
-
-
-
-                            <canvas id="chart-budget-forecast"></canvas>
-
-
-
-                        </div>
-
-
-
-                        <p class="budget-projection-footnote" id="budget-forecast-footnote"></p>
-
-
-
-                    </div>
-
-
-
-                    <div class="panel-card budget-teams-card">
-
-
-
-                        <div class="panel-header-row">
-
-
-
-                            <h3 class="panel-title">Departments</h3>
-
-
-
-                            <span class="budget-teams-meta" id="budget-quarter-label"></span>
-
-
-
-                        </div>
-
-
-
-                        <p class="panel-subtitle budget-teams-hint">Click a department to view its projection. Click again to return to all departments.</p>
-
-
-
-                        <div class="budget-dept-list" id="budget-dept-list"></div>
-
-
-
-                    </div>
-
-
-
-                    <div class="panel-card vendor-consolidation-card" id="vendor-consolidation-card">
-
-
-
-                        <h3 class="panel-title">Vendor consolidation</h3>
-
-
-
-                        <p class="panel-subtitle">Find duplicate vendor categories and estimate savings from consolidating spend.</p>
-
-
-
-                        <div id="vendor-consolidation-list">
-
-
-
-                            <div class="guardian-item">Loading vendor analysis</div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-map" class="insight-view">
-
-
-
-                    <p class="page-help">Each dot is placed at the <strong>merchant street address</strong> from the receipt. Zoom in to see individual purchases.</p>
-
-
-
-                    <div class="panel-card map-panel">
-
-
-
-                        <div class="map-panel-header">
-
-
-
-                            <div>
-
-
-
-                                <h3 class="panel-title">Where we bought things</h3>
-
-
-
-                                <p class="map-panel-sub" id="map-summary">Plotting spend by merchant city</p>
-
-
-
-                            </div>
-
-
-
-                            <div class="map-legend" aria-label="Merchant density legend">
-
-
-
-                                <span>Few</span>
-
-
-
-                                <div class="map-legend-bar"></div>
-
-
-
-                                <span>Many</span>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                        <div id="expense-map" class="expense-map" role="region" aria-label="Expense locations map"></div>
-
-
-
-                        <p class="map-panel-note" id="map-note"></p>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-activity" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-receipt"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Every purchase on a company card</strong>
-
-
-
-                            <p>Search by vendor, person, or address. Filter to flagged purchases only to see what broke the rules.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <div class="panel-card purchases-panel">
-
-
-
-                        <div class="panel-header-row">
-
-
-
-                            <h3 class="panel-title">All purchases</h3>
-
-
-
-                            <span class="purchases-count" id="purchases-count"></span>
-
-
-
-                        </div>
-
-
-
-                        <div class="purchases-toolbar" id="purchases-toolbar">
-
-
-
-                            <label class="purchases-search">
-
-
-
-                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-
-
-
-                                <input type="search" id="purchases-search" placeholder="Search vendor, person, address" autocomplete="off">
-
-
-
-                            </label>
-
-
-
-                            <select id="purchases-dept-filter" aria-label="Filter by department">
-
-
-
-                                <option value="">All departments</option>
-
-
-
-                            </select>
-
-
-
-                            <select id="purchases-cat-filter" aria-label="Filter by category">
-
-
-
-                                <option value="">All categories</option>
-
-
-
-                            </select>
-
-
-
-                            <select id="purchases-flag-filter" aria-label="Filter flagged">
-
-
-
-                                <option value="">All purchases</option>
-
-
-
-                                <option value="flagged">Flagged only</option>
-
-
-
-                                <option value="clean">Not flagged</option>
-
-
-
-                            </select>
-
-
-
-                            <select id="purchases-sort" aria-label="Sort by">
-
-
-
-                                <option value="date-desc">Newest first</option>
-
-
-
-                                <option value="date-asc">Oldest first</option>
-
-
-
-                                <option value="amount-desc">Highest amount</option>
-
-
-
-                                <option value="amount-asc">Lowest amount</option>
-
-
-
-                                <option value="vendor-asc">Vendor A to Z</option>
-
-
-
-                                <option value="employee-asc">Person A to Z</option>
-
-
-
-                            </select>
-
-
-
-                        </div>
-
-
-
-                        <div class="tx-table-wrap purchases-table-wrap" id="tx-table"></div>
-
-
-
-                        <footer class="purchases-footer" id="purchases-footer">
-
-
-
-                            <button type="button" class="btn-sm" id="purchases-prev" disabled>Previous</button>
-
-
-
-                            <span id="purchases-page-info">Page 1</span>
-
-
-
-                            <button type="button" class="btn-sm" id="purchases-next">Next</button>
-
-
-
-                        </footer>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                {% if not is_admin_view %}
-
-
-
-                <div id="insight-receipts" class="insight-view">
-
-
-
-                    <p class="page-help">Upload a receipt photo or PDF, Friday extracts the details, matches it to a card transaction, and checks policy rules.</p>
-
-
-
-                    <div class="receipts-workspace">
-
-
-
-                        <div class="panel-card receipts-upload-card">
-
-
-
-                            <h3 class="panel-title">Upload receipt</h3>
-
-
-
-                            <div class="receipts-dropzone" id="receipts-dropzone">
-
-
-
-                                <input type="file" id="receipts-file-input" accept="image/*,application/pdf" hidden>
-
-
-
-                                <div class="receipts-dropzone-empty" id="receipts-dropzone-empty">
-
-
-
-                                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-
-
-                                    <p><strong>Drop receipt here</strong> or click to browse</p>
-
-
-
-                                    <span>PNG, JPG, or PDF (max 10 MB)</span>
-
-
-
-                                </div>
-
-
-
-                                <div class="receipts-dropzone-preview" id="receipts-dropzone-preview" hidden>
-
-
-
-                                    <img id="receipts-preview-img" alt="Receipt preview">
-
-
-
-                                    <div class="receipts-file-meta" id="receipts-file-meta"></div>
-
-
-
-                                    <button type="button" class="btn-sm" id="receipts-remove-file">Remove</button>
-
-
-
-                                </div>
-
-
-
-                            </div>
-
-
-
-                            <div class="receipts-actions">
-
-
-
-                                <button type="button" class="btn-sm btn-dark" id="receipts-scan-btn" disabled>
-
-
-
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Scan receipt
-
-
-
-                                </button>
-
-
-
-                                <span class="receipts-status" id="receipts-status"></span>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <div class="panel-card receipts-result-card">
-
-
-
-                            <h3 class="panel-title">Extracted data</h3>
-
-
-
-                            <div class="receipts-result-empty" id="receipts-result-empty">
-
-
-
-                                <i class="fa-solid fa-receipt"></i>
-
-
-
-                                <p>Scan a receipt to see extracted fields here.</p>
-
-
-
-                            </div>
-
-
-
-                            <div class="receipts-result-body" id="receipts-result-body" hidden>
-
-
-
-                                <div class="receipts-match-banner" id="receipts-match-banner"></div>
-
-
-
-                                <div class="receipts-violations" id="receipts-violations"></div>
-
-
-
-                                <form id="receipts-form" class="receipts-form">
-
-
-
-                                    <div class="receipts-form-grid">
-
-
-
-                                        <label class="receipts-field"><span>Merchant</span><input name="merchant" type="text"></label>
-
-
-
-                                        <label class="receipts-field"><span>Date</span><input name="date" type="date"></label>
-
-
-
-                                        <label class="receipts-field receipts-field--wide"><span>Description</span><input name="description" type="text"></label>
-
-
-
-                                        <label class="receipts-field"><span>Category</span>
-
-
-
-                                            <select name="category">
-
-
-
-                                                <option value="">Select</option>
-
-
-
-                                                <option>Fuel</option>
-
-
-
-                                                <option>Meals &amp; Entertainment</option>
-
-
-
-                                                <option>Lodging</option>
-
-
-
-                                                <option>Transportation</option>
-
-
-
-                                                <option>Vehicle Maintenance</option>
-
-
-
-                                                <option>Permits &amp; Fees</option>
-
-
-
-                                                <option>Office Supplies</option>
-
-
-
-                                                <option>Software &amp; Subscriptions</option>
-
-
-
-                                                <option>Telecommunications</option>
-
-
-
-                                                <option>General Business</option>
-
-
-
-                                            </select>
-
-
-
-                                        </label>
-
-
-
-                                        <label class="receipts-field"><span>Amount (CAD)</span><input name="amount" type="number" step="0.01"></label>
-
-
-
-                                        <label class="receipts-field"><span>Tax</span><input name="tax" type="number" step="0.01"></label>
-
-
-
-                                        <label class="receipts-field"><span>Tip</span><input name="tip" type="number" step="0.01"></label>
-
-
-
-                                        <label class="receipts-field"><span>City</span><input name="city" type="text"></label>
-
-
-
-                                        <label class="receipts-field"><span>State</span><input name="state" type="text"></label>
-
-
-
-                                    </div>
-
-
-
-                                    <div id="receipts-dining-wrap" class="receipts-dining-wrap" hidden>
-
-
-
-                                        <fieldset class="receipts-field receipts-field--wide proposal-budget-question receipts-dining-fieldset">
-
-
-
-                                            <legend>Who ate? <span class="proposal-optional">restaurant / caf?</span></legend>
-
-
-
-                                            <p class="receipts-dining-help">Total people at the table, including you.</p>
-
-
-
-                                            <label class="receipts-field receipts-field--inline">
-
-
-
-                                                <span>Party size</span>
-
-
-
-                                                <input type="number" name="dining_party_size" id="receipts-dining-party-size" min="1" max="50" value="1">
-
-
-
-                                            </label>
-
-
-
-                                            <div class="receipts-dining-colleagues">
-
-
-
-                                                <span class="receipts-dining-colleagues-label">Colleagues at the meal <span class="proposal-optional">(optional)</span></span>
-
-
-
-                                                <div id="receipts-dining-colleagues-list" class="proposal-colleagues-list"></div>
-
-
-
-                                            </div>
-
-
-
-                                        </fieldset>
-
-
-
-                                    </div>
-
-
-
-                                    <fieldset class="receipts-field receipts-field--wide proposal-budget-question receipts-purpose-question">
-
-
-
-                                        <legend>Is this spending for personal use or a project?</legend>
-
-
-
-                                        <label class="proposal-radio">
-
-
-
-                                            <input type="radio" name="spending_purpose" value="project" checked required>
-
-
-
-                                            <span>Project use</span>
-
-
-
-                                            <small>Business or approved project expense on a company card.</small>
-
-
-
-                                        </label>
-
-
-
-                                        <label class="proposal-radio">
-
-
-
-                                            <input type="radio" name="spending_purpose" value="personal" required>
-
-
-
-                                            <span>Personal use</span>
-
-
-
-                                            <small>Personal purchase (may require reimbursement or review).</small>
-
-
-
-                                        </label>
-
-
-
-                                    </fieldset>
-
-
-
-                                    <div id="receipts-project-wrap" class="receipts-project-wrap">
-
-
-
-                                        <label class="receipts-field receipts-field--wide">
-
-
-
-                                            <span>Which approved project?</span>
-
-
-
-                                            <select name="project_id" id="receipts-project-select">
-
-
-
-                                                <option value="">Loading projects</option>
-
-
-
-                                            </select>
-
-
-
-                                        </label>
-
-
-
-                                        <p class="receipts-project-empty" id="receipts-project-empty" hidden>
-
-
-
-                                            No approved projects yet. Submit one in <strong>My projects</strong> and wait for approval.
-
-
-
-                                        </p>
-
-
-
-                                        <p class="receipts-project-spend-hint" id="receipts-project-spend-hint"></p>
-
-
-
-                                    </div>
-
-
-
-                                    <footer class="receipts-form-foot">
-
-
-
-                                        <button type="submit" class="btn-sm btn-approve">Save &amp; confirm</button>
-
-
-
-                                        <button type="button" class="btn-sm" id="receipts-cancel-btn">Cancel</button>
-
-
-
-                                    </footer>
-
-
-
-                                </form>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    <div class="panel-card receipts-history-card">
-
-
-
-                        <h3 class="panel-title">Saved receipts</h3>
-
-
-
-                        <div class="receipts-history-list" id="receipts-history-list">
-
-
-
-                            <div class="guardian-item">No saved receipts yet.</div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-                {% endif %}
-
-
-
-
-
-
-
-                <div id="insight-alerts" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Policy violations</strong>
-
-
-
-                            <p>See repeat offenders and individual purchases that broke your rules. To change what gets flagged, edit <button type="button" class="page-help-link" data-insight="settings" data-settings-tab="rules">Spending rules</button>.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <nav class="section-subnav" id="alerts-subnav" aria-label="Problem sections">
-
-
-
-                        <button type="button" class="section-subnav-btn section-subnav-btn--active" data-scroll="section-offenders">Repeat offenders</button>
-
-
-
-                        <button type="button" class="section-subnav-btn" data-scroll="section-flags">Bad purchases</button>
-
-
-
-                    </nav>
-
-
-
-
-
-
-
-                    <div class="panel-card" id="section-offenders">
-
-
-
-                        <h3 class="panel-title">People who break rules often</h3>
-
-
-
-                        <p class="panel-subtitle">Most violations first</p>
-
-
-
-                        <div class="guardian-list offenders-grid" id="offenders-list"></div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    <div class="panel-card" id="section-flags">
-
-
-
-                        <h3 class="panel-title">Purchases that look wrong</h3>
-
-
-
-                        <p class="panel-subtitle">Worst problems first, tap a filter to narrow down</p>
-
-
-
-                        <div class="flags-toolbar" id="flags-severity-filter">
-
-
-
-                            <button type="button" class="prompt-chip flags-filter flags-filter--active" data-severity="all">All</button>
-
-
-
-                            <button type="button" class="prompt-chip flags-filter" data-severity="Severe">Very bad</button>
-
-
-
-                            <button type="button" class="prompt-chip flags-filter" data-severity="High">Bad</button>
-
-
-
-                            <button type="button" class="prompt-chip flags-filter" data-severity="Medium">Maybe bad</button>
-
-
-
-                            <button type="button" class="prompt-chip flags-filter" data-severity="Low">Small issue</button>
-
-
-
-                            <input type="search" class="flags-search" id="flags-search" placeholder="Search by name or store" autocomplete="off">
-
-
-
-                        </div>
-
-
-
-                        <div class="tx-table-wrap" id="alerts-list"></div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-approvals" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-clipboard-check"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>One queue for every approval</strong>
-
-
-
-                            <p>Pick an item on the left, read the AI recommendation on the right then tap <strong class="review-decision-phrase">Approve or Deny</strong>. No email back-and-forth needed.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    <div class="review-howto panel-card">
-
-
-
-                        <span class="review-howto-step"><strong>1</strong> Pick an item</span>
-
-
-
-                        <i class="fa-solid fa-arrow-right review-howto-arrow"></i>
-
-
-
-                        <span class="review-howto-step"><strong>2</strong> Read AI recommendation</span>
-
-
-
-                        <i class="fa-solid fa-arrow-right review-howto-arrow"></i>
-
-
-
-                        <span class="review-howto-step"><strong>3</strong> <span class="review-decision-phrase">Approve or Deny</span></span>
-
-
-
-                        <span class="review-howto-keys">A for approve, D for deny</span>
-                    </div>
-
-                    <div class="review-toolbar panel-card">
-                        <p class="review-summary" id="review-summary" hidden></p>
-
-                        <div class="review-stats" id="review-stats"></div>
-
-                        <div class="review-toolbar-actions">
-                            <div class="review-filters" id="review-filters" aria-label="Filter review queue">
-                                <button type="button" class="prompt-chip review-filter review-filter--active" data-review-filter="all" title="Everything waiting for a decision">All</button>
-                                <button type="button" class="prompt-chip review-filter" data-review-filter="flag" title="Purchases flagged by policy rules">Policy flags</button>
-                                <button type="button" class="prompt-chip review-filter" data-review-filter="approval" title="High-value purchases needing sign-off">Spending requests</button>
-                                <button type="button" class="prompt-chip review-filter" data-review-filter="proposal" title="New project budget requests">Project proposals</button>
-                                <button type="button" class="prompt-chip review-filter" data-review-filter="fraud" title="Suspicious activity detected by fraud scoring">Fraud alerts</button>
-                            </div>
-
-                            <div class="review-threshold">
-                                <label for="fraud-threshold" title="Lower = more fraud alerts. Higher = fewer false positives.">Fraud sensitivity</label>
-                                <input type="range" id="fraud-threshold" min="0.1" max="0.9" step="0.05" value="0.58">
-                                <span id="fraud-threshold-val">0.58</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="review-workspace">
-                        <div class="review-workspace-col">
-                            <h3 class="review-col-heading">Waiting for you</h3>
-                            <p class="review-col-hint">Click a card to see details</p>
-                            <div class="review-queue panel-card" id="review-queue" aria-label="Review queue">
-                                <div class="review-queue-empty guardian-item">Loading review queue</div>
-                            </div>
-                        </div>
-
-                        <div class="review-workspace-col">
-                            <h3 class="review-col-heading">Details &amp; decision</h3>
-                            <p class="review-col-hint">AI recommendation and context appear here</p>
-                            <section class="review-detail panel-card" id="review-detail" hidden>
-                                <div class="review-detail-empty">
-                                    <i class="fa-solid fa-hand-pointer"></i>
-                                    <h3>Select an item to review</h3>
-                                    <p>Each card shows who spent, how much, and why it needs your attention.</p>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="insight-proposals" class="insight-view">
-                    <p class="page-help">Submit a project idea with the budget you need. Your CEO or finance lead will review it in the <strong>Review</strong> queue.</p>
-                    <div class="proposal-layout">
-                        <div class="panel-card proposal-form-card">
-                            <h3 class="panel-title">New project proposal</h3>
-                            <p class="panel-subtitle" id="proposal-budget-hint">Loading your department budget</p>
-                            <form id="proposal-form" class="proposal-form">
-                                <label class="proposal-field">
-                                    <span>Project title</span>
-                                    <input type="text" id="proposal-title" maxlength="200" placeholder="e.g. Q2 customer conference booth" required>
-                                </label>
-                                <fieldset class="proposal-field proposal-budget-question">
-                                    <legend>Is this project using your department&apos;s existing budget, or requesting extra budget?</legend>
-                                    <label class="proposal-radio">
-                                        <input type="radio" name="proposal-budget-source" value="existing" checked required>
-                                        <span>Use existing department budget</span>
-                                        <small>Spend from what your department already has left this quarter.</small>
-                                    </label>
-                                    <label class="proposal-radio">
-                                        <input type="radio" name="proposal-budget-source" value="extra" required>
-                                        <span>Request extra budget</span>
-                                        <small>Ask for additional funds beyond the current department cap.</small>
-                                    </label>
-                                </fieldset>
-                                <label class="proposal-field">
-                                    <span>Budget requested (CAD)</span>
-                                    <input type="number" id="proposal-amount" min="1" step="0.01" placeholder="5000" required>
-                                </label>
-
-
-
-                                <label class="proposal-field">
-
-
-
-                                    <span>Description &amp; justification</span>
-
-
-
-                                    <textarea id="proposal-description" rows="5" placeholder="What is the project, why does the team need it, and how will the budget be used?" required></textarea>
-
-
-
-                                </label>
-
-
-
-                                <fieldset class="proposal-field proposal-colleagues-field">
-
-
-
-                                    <legend>Add colleagues <span class="proposal-optional">(optional)</span></legend>
-
-
-
-                                    <p class="proposal-colleagues-help">Search for teammates by name.</p>
-
-
-
-                                    <div class="colleague-picker" id="proposal-colleague-picker">
-
-
-
-                                        <div class="proposal-colleagues-chips colleague-picker-selected" id="proposal-colleagues-selected" hidden></div>
-
-
-
-                                        <div class="colleague-picker-input-wrap">
-
-
-
-                                            <div class="colleague-picker-search-wrap">
-
-
-
-                                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-
-
-
-                                                <input type="search" id="proposal-colleague-search" placeholder="Search by name" autocomplete="off" aria-expanded="false" aria-controls="proposal-colleague-dropdown">
-
-
-
-                                            </div>
-
-
-
-                                            <div class="colleague-picker-dropdown" id="proposal-colleague-dropdown" role="listbox" hidden></div>
-
-
-
-                                        </div>
-
-
-
-                                    </div>
-
-
-
-                                </fieldset>
-
-
-
-                                <footer class="proposal-form-footer">
-
-
-
-                                    <span class="proposal-form-status" id="proposal-form-status"></span>
-
-
-
-                                    <button type="submit" class="btn-sm btn-dark" id="proposal-submit-btn">Submit for approval</button>
-
-
-
-                                </footer>
-
-
-
-                            </form>
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <div class="panel-card proposal-history-card">
-
-
-
-                            <h3 class="panel-title">Your submissions</h3>
-
-
-
-                            <p class="panel-subtitle">Track pending and past decisions</p>
-
-
-
-                            <div id="proposal-list" class="proposal-list">
-
-
-
-                                <div class="guardian-item">Loading</div>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                
-                <div id="insight-trip-reports" class="insight-view">
-                    <p class="page-help">Select the card purchases from a business trip, add a short description, and submit for finance review. Approved reports appear in the admin <strong>Review</strong> queue.</p>
-                    <div class="proposal-layout trip-report-layout">
-                        <div class="panel-card proposal-form-card">
-                            <h3 class="panel-title">New trip report</h3>
-                            <p class="panel-subtitle" id="trip-report-txn-hint">Loading your eligible purchases?</p>
-                            <form id="trip-report-form" class="proposal-form">
-                                <label class="proposal-field">
-                                    <span>Trip name</span>
-                                    <input type="text" id="trip-report-name" maxlength="200" placeholder="e.g. Q2 Toronto client visit" required>
-                                </label>
-                                <label class="proposal-field">
-                                    <span>Purpose &amp; justification</span>
-                                    <textarea id="trip-report-purpose" rows="4" placeholder="Who did you meet, what was the business purpose, and why should these expenses be reimbursed?" required></textarea>
-                                </label>
-                                <fieldset class="proposal-field proposal-budget-question trip-report-purpose-question">
-                                    <legend>Is this trip for personal use or a project?</legend>
-                                    <label class="proposal-radio">
-                                        <input type="radio" name="trip_spending_purpose" value="project" checked required>
-                                        <span>Project use</span>
-                                        <small>Business travel tied to an approved project budget.</small>
-                                    </label>
-                                    <label class="proposal-radio">
-                                        <input type="radio" name="trip_spending_purpose" value="personal" required>
-                                        <span>Personal use</span>
-                                        <small>Personal travel that may require separate reimbursement review.</small>
-                                    </label>
-                                </fieldset>
-                                <div id="trip-report-project-wrap" class="receipts-project-wrap">
-                                    <label class="proposal-field">
-                                        <span>Which approved project?</span>
-                                        <select name="project_id" id="trip-report-project-select">
-                                            <option value="">Loading projects?</option>
-                                        </select>
-                                    </label>
-                                    <p class="receipts-project-empty" id="trip-report-project-empty" hidden>
-                                        No approved projects yet. Submit one in <strong>My projects</strong> and wait for approval.
-                                    </p>
-                                    <p class="receipts-project-spend-hint" id="trip-report-project-spend-hint"></p>
-                                </div>
-                                <fieldset class="proposal-field trip-report-txn-field">
-                                    <legend>Purchases on this trip</legend>
-                                    <p class="proposal-colleagues-help">Search and add every purchase that belongs to the same trip. Purchases already on another report are hidden.</p>
-                                    <p class="trip-report-txn-total" id="trip-report-txn-total" hidden></p>
-                                    <div class="colleague-picker trip-purchase-picker" id="trip-report-purchase-picker">
-                                        <div class="proposal-colleagues-chips colleague-picker-selected" id="trip-report-purchases-selected" hidden></div>
-                                        <div class="colleague-picker-input-wrap">
-                                            <div class="colleague-picker-search-wrap">
-                                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                                                <input type="search" id="trip-report-purchase-search" placeholder="Search by vendor, date, or amount" autocomplete="off" aria-expanded="false" aria-controls="trip-report-purchase-dropdown">
-                                            </div>
-                                            <div class="colleague-picker-dropdown" id="trip-report-purchase-dropdown" role="listbox" hidden></div>
-                                        </div>
-                                    </div>
-                                    <p class="trip-report-purchase-empty guardian-item" id="trip-report-purchase-empty" hidden>No eligible purchases right now.</p>
-                                </fieldset>
-                                <footer class="proposal-form-footer">
-                                    <span class="proposal-form-status" id="trip-report-form-status"></span>
-                                    <button type="submit" class="btn-sm btn-dark" id="trip-report-submit-btn">Submit trip report</button>
-                                </footer>
-                            </form>
-                        </div>
-                        <div class="panel-card proposal-history-card">
-                            <h3 class="panel-title">Your trip reports</h3>
-                            <p class="panel-subtitle">Track pending and past decisions</p>
-                            <div id="trip-report-list" class="proposal-list">
-                                <div class="guardian-item">Loading?</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-<div id="insight-settings" class="insight-view">
-
-
-
-                    <div class="page-guide">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-gear"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Configure CashFlux</strong>
-
-
-
-                            <p>Set quarterly budget caps per department and define spending rules (meal limits, approval thresholds, restricted merchants). Changes apply immediately to new policy scans.</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    <nav class="section-subnav" id="settings-subnav" aria-label="Settings sections">
-
-
-
-                        <button type="button" class="section-subnav-btn section-subnav-btn--active" data-settings-tab="budgets">Department budgets</button>
-
-
-
-                        <button type="button" class="section-subnav-btn" data-settings-tab="rules">Spending rules</button>
-
-
-
-                    </nav>
-
-
-
-
-
-
-
-                    <div class="settings-panel settings-panel--active" id="settings-panel-budgets">
-
-
-
-                        <div class="panel-card">
-
-
-
-                            <h3 class="panel-title">Set budget per department</h3>
-
-
-
-                            <p class="panel-subtitle" id="settings-budget-quarter">How much each department can spend this quarter.</p>
-
-
-
-                            <div class="settings-budget-list" id="settings-budget-list"></div>
-
-
-
-                            <footer class="settings-footer">
-
-
-
-                                <span class="settings-save-status" id="budget-save-status"></span>
-
-
-
-                                <button type="button" class="btn-sm" id="budget-reset-btn">Use suggested amounts</button>
-
-
-
-                                <button type="button" class="btn-sm btn-dark" id="budget-save-btn">Save budgets</button>
-
-
-
-                            </footer>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-
-
-
-                    <div class="settings-panel" id="settings-panel-rules">
-
-
-
-                        <div class="panel-card policy-import-card">
-
-
-
-                            <h3 class="panel-title">Import policy from PDF</h3>
-
-
-
-                            <p class="panel-subtitle">Upload your company expense policy document, Friday reads it and updates all spending rules below automatically.</p>
-
-
-
-                            <div class="policy-import-dropzone" id="policy-import-dropzone">
-
-
-
-                                <input type="file" id="policy-import-input" accept="application/pdf,.pdf,.md,.txt" hidden>
-
-
-
-                                <div class="policy-import-empty" id="policy-import-empty">
-
-
-
-                                    <i class="fa-solid fa-file-pdf"></i>
-
-
-
-                                    <p><strong>Drop your policy PDF here</strong> or click to browse</p>
-
-
-
-                                    <span>PDF, Markdown, or text (max 15 MB)</span>
-
-
-
-                                </div>
-
-
-
-                            </div>
-
-
-
-                            <div class="policy-import-actions">
-
-
-
-                                <button type="button" class="btn-sm btn-dark" id="policy-import-btn" disabled>
-
-
-
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Apply policy with Gemini
-
-
-
-                                </button>
-
-
-
-                                <span class="policy-import-status" id="policy-import-status"></span>
-
-
-
-                            </div>
-
-
-
-                            <ul class="policy-import-notes" id="policy-import-notes" hidden></ul>
-
-
-
-                        </div>
-
-
-
-                        <div class="panel-card settings-policy-card">
-
-
-
-                            <h3 class="panel-title">Spending rules</h3>
-
-
-
-                            <p class="panel-subtitle">Limits, keywords, and the full policy document</p>
-
-
-
-                            <nav class="policy-editor-tabs" id="policy-editor-tabs" aria-label="Policy editor sections">
-
-
-
-                                <button type="button" class="policy-editor-tab policy-editor-tab--active" data-policy-tab="thresholds">Limits</button>
-
-
-
-                                <button type="button" class="policy-editor-tab" data-policy-tab="meals">Meals &amp; travel</button>
-
-
-
-                                <button type="button" class="policy-editor-tab" data-policy-tab="keywords">Keywords</button>
-
-
-
-                                <button type="button" class="policy-editor-tab" data-policy-tab="departments">By department</button>
-
-
-
-                                <button type="button" class="policy-editor-tab" data-policy-tab="roles">By role</button>
-
-
-
-                                <button type="button" class="policy-editor-tab" data-policy-tab="document">Policy text</button>
-
-
-
-                            </nav>
-
-
-
-                            <form id="policy-editor-form" class="policy-editor-body">
-
-
-
-                                <div class="policy-editor-panel policy-editor-panel--active" data-policy-panel="thresholds"></div>
-
-
-
-                                <div class="policy-editor-panel" data-policy-panel="meals"></div>
-
-
-
-                                <div class="policy-editor-panel" data-policy-panel="keywords"></div>
-
-
-
-                                <div class="policy-editor-panel" data-policy-panel="departments"></div>
-
-
-
-                                <div class="policy-editor-panel" data-policy-panel="roles"></div>
-
-
-
-                                <div class="policy-editor-panel" data-policy-panel="document">
-
-
-
-                                    <label class="policy-field policy-field--full">
-
-
-
-                                        <span>Full policy (Markdown)</span>
-
-
-
-                                        <textarea id="policy-document-input" rows="18" placeholder="Company expense policy"></textarea>
-
-
-
-                                    </label>
-
-
-
-                                </div>
-
-
-
-                            </form>
-
-
-
-                            <footer class="settings-footer policy-editor-footer">
-
-
-
-                                <span class="settings-save-status" id="policy-save-status"></span>
-
-
-
-                                <button type="button" class="btn-sm btn-dark" id="policy-save-btn">Save rules</button>
-
-
-
-                            </footer>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-
-
-
-
-                <div id="insight-chat" class="insight-view insight-view--chat">
-
-
-
-                    <div class="page-guide page-guide--chat">
-
-
-
-                        <div class="page-guide-icon"><i class="fa-solid fa-robot"></i></div>
-
-
-
-                        <div class="page-guide-body">
-
-
-
-                            <strong>Friday, your spending assistant</strong>
-
-
-
-                            <p>Ask in plain English. Friday answers with exact numbers from your data and shows a chart when one helps. Follow-up questions work too. For example "How does that compare to Engineering?"</p>
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-                    <p class="chat-prompts-label">Try asking:</p>
-
-
-
-                    <div class="chat-panel">
-
-
-
-                        <div class="prompt-row" id="suggested-prompts">
-
-
-
-                            <button type="button" class="prompt-chip" data-prompt="What did Marketing spend on software last quarter?">Marketing software spend</button>
-
-
-
-                            <button type="button" class="prompt-chip" data-prompt="At this burn rate, will Marketing exceed its budget this quarter?">Will we run out of money?</button>
-
-
-
-                            <button type="button" class="prompt-chip" data-prompt="Who are the top 5 vendors this month?">Top vendors</button>
-
-
-
-                            <button type="button" class="prompt-chip" data-prompt="Show me flagged purchases">Policy flags</button>
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <div class="chat-viewport">
-
-
-
-                            <div id="chat" class="messages" aria-live="polite">
-
-
-
-                                <div id="typing-indicator" class="typing-bubble" style="display: none;">
-
-
-
-                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-
-
-
-                                </div>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <footer class="chat-footer">
-
-
-
-                            <div class="composer">
-
-
-
-                                <div id="attachment-preview" class="attachment-preview" hidden>
-
-
-
-                                    <div class="attachment-chip" id="attachment-chip"></div>
-
-
-
-                                    <button type="button" class="attachment-remove" id="attachment-remove" aria-label="Remove attachment">
-
-
-
-                                        <i class="fa-solid fa-xmark"></i>
-
-
-
-                                    </button>
-
-
-
-                                </div>
-
-
-
-                                <div class="composer-row">
-
-
-
-                                    <input type="file" id="receipt-input" accept="image/*,application/pdf" hidden>
-
-
-
-                                    <button type="button" id="attach-btn" class="attach-btn" title="Attach receipt or PDF">
-
-
-
-                                        <i class="fa-solid fa-paperclip"></i>
-
-
-
-                                    </button>
-
-
-
-                                    <button type="button" id="chat-mic-btn" class="attach-btn chat-mic-btn" title="Speak to Friday (Alt+V)" aria-label="Speak to Friday">
-
-
-
-                                        <i class="fa-solid fa-microphone"></i>
-
-
-
-                                    </button>
-
-
-
-                                    <div class="input-wrap">
-
-
-
-                                        <input id="message-input" class="chat-input" type="text" placeholder="Ask or tell Friday what to do, e.g. Approve pending projects, set Engineering budget to $50k">
-
-
-
-                                    </div>
-
-
-
-                                    <button type="button" id="sendQuestion" class="send-btn" aria-label="Send">
-
-
-
-                                        <i class="fa-solid fa-arrow-up"></i>
-
-
-
-                                    </button>
-
-
-
-                                </div>
-
-
-
-                            </div>
-
-
-
-                        </footer>
-
-
-
-                    </div>
-
-
-
-                </div>
-
-
-
-            </div>
-
-
-
-        </main>
-
-
-
+{% extends "layout.html" %} {% block content %}
+
+<div
+  class="app-shell {% if not is_admin_view %}app-shell--employee{% endif %}"
+  data-admin="{{ '1' if is_admin_view else '0' }}"
+  data-maps-key="{{ google_maps_api_key }}"
+>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark" id="brand-mark" title="CashFlux">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
+
+      <span class="brand-name">CashFlux</span>
     </div>
 
+    <nav class="sidebar-nav" role="tablist" aria-label="Main navigation">
+      <div class="nav-group">
+        <span class="nav-group-label">Start</span>
 
+        <button
+          type="button"
+          class="nav-item nav-item--active"
+          data-insight="overview"
+        >
+          <i class="fa-solid fa-house"></i>
 
-</div>
+          <span>Home</span>
+        </button>
+      </div>
 
+      <div class="nav-group">
+        <span class="nav-group-label">Money</span>
 
+        {% if is_admin_view %}
 
+        <button type="button" class="nav-item" data-insight="budget">
+          <i class="fa-solid fa-wallet"></i>
 
+          <span>Budgets</span>
+        </button>
 
+        {% endif %}
 
+        <button type="button" class="nav-item" data-insight="activity">
+          <i class="fa-solid fa-receipt"></i>
 
-<div id="command-palette" class="command-palette" hidden>
+          <span
+            >{% if is_admin_view %}All purchases{% else %}My purchases{% endif
+            %}</span
+          >
+        </button>
 
+        {% if not is_admin_view %}
 
+        <button type="button" class="nav-item" data-insight="receipts">
+          <i class="fa-solid fa-camera"></i>
 
-    <div class="command-palette-backdrop" data-close-palette></div>
+          <span>Receipts</span>
+        </button>
 
+        {% endif %} {% if not is_admin_view %}
 
+        <button type="button" class="nav-item" data-insight="proposals">
+          <i class="fa-solid fa-folder-open"></i>
 
-    <div class="command-palette-dialog" role="dialog" aria-modal="true" aria-label="Quick jump">
+          <span>My projects</span>
+        </button>
 
+        <button type="button" class="nav-item" data-insight="trip-reports">
+          <i class="fa-solid fa-suitcase-rolling"></i>
 
+          <span>Travel reports</span>
+        </button>
 
-        <div class="command-palette-search">
+        {% endif %} {% if is_admin_view %}
 
+        <button type="button" class="nav-item" data-insight="people">
+          <i class="fa-solid fa-users"></i>
 
+          <span>People</span>
+        </button>
 
+        {% endif %}
+
+        <button type="button" class="nav-item" data-insight="map">
+          <i class="fa-solid fa-map-location-dot"></i>
+
+          <span>Map</span>
+        </button>
+      </div>
+
+      {% if is_admin_view %}
+
+      <div class="nav-group">
+        <span class="nav-group-label">Needs attention</span>
+
+        <button
+          type="button"
+          class="nav-item"
+          data-insight="alerts"
+          title="Purchases that broke spending rules"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+
+          <span>Policy flags</span>
+
+          <span class="nav-badge" id="nav-badge-flags" hidden></span>
+        </button>
+
+        <button
+          type="button"
+          class="nav-item"
+          data-insight="approvals"
+          title="Approve spending requests and fraud alerts"
+        >
+          <i class="fa-solid fa-clipboard-check"></i>
+
+          <span>Review queue</span>
+
+          <span
+            class="nav-badge nav-badge--warn"
+            id="nav-badge-approvals"
+            hidden
+          ></span>
+        </button>
+      </div>
+
+      {% endif %}
+
+      <div class="nav-group">
+        <span class="nav-group-label">Ask AI</span>
+
+        <button
+          type="button"
+          class="nav-item"
+          data-insight="chat"
+          title="Ask questions about spending in plain English"
+        >
+          <i class="fa-solid fa-comments"></i>
+
+          <span>Friday assistant</span>
+        </button>
+      </div>
+
+      {% if is_admin_view %}
+
+      <div class="nav-group">
+        <span class="nav-group-label">Setup</span>
+
+        <button type="button" class="nav-item" data-insight="settings">
+          <i class="fa-solid fa-gear"></i>
+
+          <span>Settings</span>
+        </button>
+      </div>
+
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <button
+        type="button"
+        class="theme-toggle"
+        data-theme-toggle
+        aria-pressed="false"
+        aria-label="Switch to dark mode"
+      >
+        <span class="theme-toggle-icon theme-toggle-icon-light"
+          ><i class="fa-solid fa-moon"></i
+        ></span>
+
+        <span class="theme-toggle-icon theme-toggle-icon-dark" hidden
+          ><i class="fa-solid fa-sun"></i
+        ></span>
+
+        <span class="theme-toggle-label">Dark mode</span>
+      </button>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">
+          {{ (current_user.display_name or '?')[:2]|upper }}
+        </div>
+
+        <div class="sidebar-user-info">
+          <strong>{{ current_user.display_name }}</strong>
+
+          <span>{{ current_user.email }}</span>
+
+          {% if is_admin_view and current_user.company %}
+
+          <span class="sidebar-company-code"
+            >Company code:
+            <strong>{{ current_user.company.slug }}</strong></span
+          >
+
+          {% endif %}
+        </div>
+
+        <span class="sidebar-user-badge"
+          >{{ current_user.role|replace('_', ' ')|title }}</span
+        >
+      </div>
+
+      <form
+        method="post"
+        action="{{ url_for('logout') }}"
+        class="sidebar-logout-form"
+      >
+        <button type="submit" class="sidebar-logout-btn">Sign out</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main-frame">
+    <header class="page-header">
+      <button
+        type="button"
+        class="btn-icon btn-menu"
+        id="sidebar-toggle"
+        aria-label="Open menu"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="page-header-inner">
+        <div class="page-header-text">
+          <h1 class="page-title" id="page-title">Home</h1>
+
+          <p class="page-subtitle" id="page-subtitle">
+            Explore spending, review approvals, and catch policy issues.
+          </p>
+        </div>
+
+        <div class="page-header-actions">
+          <button
+            type="button"
+            class="btn-header"
+            id="quick-jump-btn"
+            title="Find a page (Ctrl+K)"
+          >
             <i class="fa-solid fa-magnifying-glass"></i>
 
+            <span>Find a page</span>
 
+            <kbd>Ctrl K</kbd>
+          </button>
+        </div>
+      </div>
+    </header>
 
-            <input type="search" id="command-palette-input" placeholder="Jump to a page or action" autocomplete="off">
+    <main class="main-content">
+      <div class="main-scroll">
+        <div id="insight-overview" class="insight-view insight-view--active">
+          <div class="guardian-stat-row stat-row" id="dashboard-stats"></div>
 
+          {% if is_admin_view %}
 
+          <div class="approver-inbox panel-card" id="approver-inbox" hidden>
+            <div class="approver-inbox-body">
+              <i class="fa-solid fa-inbox approver-inbox-icon"></i>
 
-            <kbd>Esc</kbd>
+              <div>
+                <strong id="approver-inbox-title"
+                  >Items waiting for your review</strong
+                >
 
+                <p id="approver-inbox-detail">
+                  Open the Review queue to approve requests and fraud flags.
+                </p>
+              </div>
+            </div>
 
+            <button
+              type="button"
+              class="btn-sm btn-dark"
+              id="approver-inbox-btn"
+              data-insight="approvals"
+            >
+              Open Review queue
+            </button>
+          </div>
 
+          {% endif %} {% if not is_admin_view %}
+
+          <div class="page-guide page-guide--compact" id="home-guide">
+            <div class="page-guide-icon">
+              <i class="fa-solid fa-circle-info"></i>
+            </div>
+
+            <div class="page-guide-body">
+              <strong>Your spending hub</strong>
+
+              <p>
+                See your purchases, upload receipts, and ask
+                <strong>Friday</strong> questions like "How much did I spend on
+                meals this month?"
+              </p>
+            </div>
+          </div>
+
+          {% endif %}
+
+          <h2 class="section-heading">
+            {% if is_admin_view %}Quick actions{% else %}Quick actions{% endif
+            %}
+          </h2>
+
+          <div class="home-actions home-actions--primary" id="quick-nav">
+            <button type="button" class="home-action-card" data-insight="chat">
+              <i class="fa-solid fa-comments"></i>
+
+              <strong>Ask Friday</strong>
+
+              <span>Questions in plain English</span>
+            </button>
+
+            {% if is_admin_view %}
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="budget"
+            >
+              <i class="fa-solid fa-wallet"></i>
+
+              <strong>Check budgets</strong>
+
+              <span>Department caps, burn rate &amp; forecasts</span>
+            </button>
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="alerts"
+            >
+              <i class="fa-solid fa-triangle-exclamation"></i>
+
+              <strong>Policy flags</strong>
+
+              <span>Purchases that broke spending rules</span>
+            </button>
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="approvals"
+            >
+              <i class="fa-solid fa-clipboard-check"></i>
+
+              <strong>Review queue</strong>
+
+              <span>Approve requests, trips &amp; fraud in one tap</span>
+            </button>
+
+            {% else %}
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="activity"
+            >
+              <i class="fa-solid fa-receipt"></i>
+
+              <strong>My purchases</strong>
+
+              <span>Every transaction on your card</span>
+            </button>
+
+            <button type="button" class="home-action-card" data-insight="map">
+              <i class="fa-solid fa-map"></i>
+
+              <strong>Where I spent</strong>
+
+              <span>Map of your purchases</span>
+            </button>
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="proposals"
+            >
+              <i class="fa-solid fa-folder-open"></i>
+
+              <strong>My projects</strong>
+
+              <span>Request budget for a new project</span>
+            </button>
+
+            <button
+              type="button"
+              class="home-action-card"
+              data-insight="trip-reports"
+            >
+              <i class="fa-solid fa-suitcase-rolling"></i>
+
+              <strong>Travel reports</strong>
+
+              <span>Bundle travel purchases for reimbursement</span>
+            </button>
+
+            {% endif %}
+          </div>
+
+          {% if is_admin_view %}
+
+          <div class="home-actions home-actions--secondary">
+            <button
+              type="button"
+              class="home-action-link"
+              data-insight="people"
+            >
+              <i class="fa-solid fa-users"></i> People
+            </button>
+
+            <button
+              type="button"
+              class="home-action-link"
+              data-insight="activity"
+            >
+              <i class="fa-solid fa-receipt"></i> All purchases
+            </button>
+
+            <button type="button" class="home-action-link" data-insight="map">
+              <i class="fa-solid fa-map"></i> Map
+            </button>
+          </div>
+
+          {% endif %}
+
+          <h2 class="section-heading">
+            {% if is_admin_view %}Quick look{% else %}My spending{% endif %}
+          </h2>
+
+          <div class="dashboard-split">
+            <div class="panel-card panel-card--wide">
+              <h3 class="panel-title">
+                {% if is_admin_view %}Where the money went{% else %}Where my
+                money went{% endif %}
+              </h3>
+
+              <div class="overview-grid">
+                <div class="dash-chart-block dash-chart-block--pink">
+                  <h4>
+                    {% if is_admin_view %}Top spenders{% else %}By category{%
+                    endif %}
+                  </h4>
+
+                  <div class="chart-wrap chart-wrap--md">
+                    <canvas id="chart-dept"></canvas>
+                  </div>
+                </div>
+
+                <div class="dash-chart-block dash-chart-block--blue">
+                  <h4>Month by month (cumulative)</h4>
+
+                  <div class="chart-wrap chart-wrap--md">
+                    <canvas id="chart-month"></canvas>
+                  </div>
+                </div>
+
+                <div
+                  class="dash-chart-block dash-chart-block--mint dash-chart-block--wide"
+                >
+                  <h4>
+                    {% if is_admin_view %}By department{% else %}By department
+                    (my spend){% endif %}
+                  </h4>
+
+                  <div
+                    class="guardian-list dashboard-dept-list"
+                    id="dashboard-departments"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-header-row">
+                <h3 class="panel-title">
+                  {% if is_admin_view %}Latest purchases{% else %}My latest
+                  purchases{% endif %}
+                </h3>
+                <button
+                  type="button"
+                  class="panel-link"
+                  data-insight="activity"
+                >
+                  See all
+                </button>
+              </div>
+              <div class="activity-feed" id="activity-feed"></div>
+            </div>
+          </div>
         </div>
 
+        <div id="insight-people" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon"><i class="fa-solid fa-users"></i></div>
 
+            <div class="page-guide-body">
+              <strong>Who spends what</strong>
 
-        <ul class="command-palette-list" id="command-palette-list"></ul>
+              <p>
+                Click a name for spending history and peer benchmarks. Check
+                boxes to compare two or more people side by side.
+              </p>
+            </div>
+          </div>
 
+          <div class="compare-toolbar" id="compare-toolbar">
+            <span class="compare-label">Pick people to compare</span>
 
+            <div class="compare-chips" id="compare-chips"></div>
 
-    </div>
+            <button
+              type="button"
+              class="btn-sm btn-compare"
+              id="btn-run-compare"
+              disabled
+            >
+              Compare
+            </button>
 
+            <button
+              type="button"
+              class="btn-sm btn-pdf"
+              id="btn-compare-pdf"
+              disabled
+              title="Generate PDF report for selected people"
+            >
+              Report Generation
+            </button>
+          </div>
 
+          <div class="people-grid">
+            <div class="panel-card">
+              <h3 class="panel-title">Everyone</h3>
 
+              <div class="team-list" id="employee-roster"></div>
+            </div>
+
+            <div class="panel-card">
+              <h3 class="panel-title">Who spent the most</h3>
+
+              <div class="chart-wrap chart-wrap--md">
+                <canvas id="chart-emp"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-budget" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <div class="page-guide-body">
+              <strong>Department budgets</strong>
+
+              <p>
+                <span class="ux-legend ux-legend--ok">Green</span> = on track ?
+                <span class="ux-legend ux-legend--warn">Yellow</span> = watch
+                closely ? <span class="ux-legend ux-legend--bad">Red</span> =
+                over cap or projected to exceed. Change limits in
+                <button
+                  type="button"
+                  class="page-help-link"
+                  data-insight="settings"
+                  data-settings-tab="budgets"
+                >
+                  Settings</button
+                >.
+              </p>
+            </div>
+          </div>
+
+          <div class="budget-hero panel-card" id="budget-hero" hidden></div>
+
+          <div class="budget-stat-row" id="budget-summary-stats"></div>
+
+          <div class="panel-card budget-charts-card">
+            <h3 class="panel-title">Overview</h3>
+
+            <p class="panel-subtitle" id="budget-chart-subtitle">
+              Spent vs allowed this quarter
+            </p>
+
+            <div class="budget-charts-row">
+              <div class="chart-wrap chart-wrap--budget">
+                <canvas id="chart-budget-bar"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="panel-card budget-projection-card"
+            id="budget-projection-card"
+            hidden
+          >
+            <div class="budget-projection-head">
+              <div>
+                <span class="budget-projection-badge">Projection</span>
+
+                <h3 class="panel-title" id="budget-forecast-title">
+                  Budget projection
+                </h3>
+
+                <p class="panel-subtitle" id="budget-forecast-subtitle"></p>
+              </div>
+            </div>
+
+            <div class="chart-wrap chart-wrap--budget-projection">
+              <canvas id="chart-budget-forecast"></canvas>
+            </div>
+
+            <p
+              class="budget-projection-footnote"
+              id="budget-forecast-footnote"
+            ></p>
+          </div>
+
+          <div class="panel-card budget-teams-card">
+            <div class="panel-header-row">
+              <h3 class="panel-title">Departments</h3>
+
+              <span class="budget-teams-meta" id="budget-quarter-label"></span>
+            </div>
+
+            <p class="panel-subtitle budget-teams-hint">
+              Click a department to view its projection. Click again to return
+              to all departments.
+            </p>
+
+            <div class="budget-dept-list" id="budget-dept-list"></div>
+          </div>
+
+          <div
+            class="panel-card vendor-consolidation-card"
+            id="vendor-consolidation-card"
+          >
+            <h3 class="panel-title">Vendor consolidation</h3>
+
+            <p class="panel-subtitle">
+              Find duplicate vendor categories and estimate savings from
+              consolidating spend.
+            </p>
+
+            <div id="vendor-consolidation-list">
+              <div class="guardian-item">Loading vendor analysis</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-map" class="insight-view">
+          <p class="page-help">
+            Each dot is placed at the
+            <strong>merchant street address</strong> from the receipt. Zoom in
+            to see individual purchases.
+          </p>
+
+          <div class="panel-card map-panel">
+            <div class="map-panel-header">
+              <div>
+                <h3 class="panel-title">Where we bought things</h3>
+
+                <p class="map-panel-sub" id="map-summary">
+                  Plotting spend by merchant city
+                </p>
+              </div>
+
+              <div class="map-legend" aria-label="Merchant density legend">
+                <span>Few</span>
+
+                <div class="map-legend-bar"></div>
+
+                <span>Many</span>
+              </div>
+            </div>
+
+            <div
+              id="expense-map"
+              class="expense-map"
+              role="region"
+              aria-label="Expense locations map"
+            ></div>
+
+            <p class="map-panel-note" id="map-note"></p>
+          </div>
+        </div>
+
+        <div id="insight-activity" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <div class="page-guide-body">
+              <strong>Every purchase on a company card</strong>
+
+              <p>
+                Search by vendor, person, or address. Filter to flagged
+                purchases only to see what broke the rules.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel-card purchases-panel">
+            <div class="panel-header-row">
+              <h3 class="panel-title">All purchases</h3>
+
+              <span class="purchases-count" id="purchases-count"></span>
+            </div>
+
+            <div class="purchases-toolbar" id="purchases-toolbar">
+              <label class="purchases-search">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+
+                <input
+                  type="search"
+                  id="purchases-search"
+                  placeholder="Search vendor, person, address"
+                  autocomplete="off"
+                />
+              </label>
+
+              <select
+                id="purchases-dept-filter"
+                aria-label="Filter by department"
+              >
+                <option value="">All departments</option>
+              </select>
+
+              <select id="purchases-cat-filter" aria-label="Filter by category">
+                <option value="">All categories</option>
+              </select>
+
+              <select id="purchases-flag-filter" aria-label="Filter flagged">
+                <option value="">All purchases</option>
+
+                <option value="flagged">Flagged only</option>
+
+                <option value="clean">Not flagged</option>
+              </select>
+
+              <select id="purchases-sort" aria-label="Sort by">
+                <option value="date-desc">Newest first</option>
+
+                <option value="date-asc">Oldest first</option>
+
+                <option value="amount-desc">Highest amount</option>
+
+                <option value="amount-asc">Lowest amount</option>
+
+                <option value="vendor-asc">Vendor A to Z</option>
+
+                <option value="employee-asc">Person A to Z</option>
+              </select>
+            </div>
+
+            <div class="tx-table-wrap purchases-table-wrap" id="tx-table"></div>
+
+            <footer class="purchases-footer" id="purchases-footer">
+              <button type="button" class="btn-sm" id="purchases-prev" disabled>
+                Previous
+              </button>
+
+              <span id="purchases-page-info">Page 1</span>
+
+              <button type="button" class="btn-sm" id="purchases-next">
+                Next
+              </button>
+            </footer>
+          </div>
+        </div>
+
+        {% if not is_admin_view %}
+
+        <div id="insight-receipts" class="insight-view">
+          <p class="page-help">
+            Upload a receipt photo or PDF, Friday extracts the details, matches
+            it to a card transaction, and checks policy rules.
+          </p>
+
+          <div class="receipts-workspace">
+            <div class="panel-card receipts-upload-card">
+              <h3 class="panel-title">Upload receipt</h3>
+
+              <div class="receipts-dropzone" id="receipts-dropzone">
+                <input
+                  type="file"
+                  id="receipts-file-input"
+                  accept="image/*,application/pdf"
+                  hidden
+                />
+
+                <div
+                  class="receipts-dropzone-empty"
+                  id="receipts-dropzone-empty"
+                >
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                  <p><strong>Drop receipt here</strong> or click to browse</p>
+
+                  <span>PNG, JPG, or PDF (max 10 MB)</span>
+                </div>
+
+                <div
+                  class="receipts-dropzone-preview"
+                  id="receipts-dropzone-preview"
+                  hidden
+                >
+                  <img id="receipts-preview-img" alt="Receipt preview" />
+
+                  <div class="receipts-file-meta" id="receipts-file-meta"></div>
+
+                  <button
+                    type="button"
+                    class="btn-sm"
+                    id="receipts-remove-file"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <div class="receipts-actions">
+                <button
+                  type="button"
+                  class="btn-sm btn-dark"
+                  id="receipts-scan-btn"
+                  disabled
+                >
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Scan receipt
+                </button>
+
+                <span class="receipts-status" id="receipts-status"></span>
+              </div>
+            </div>
+
+            <div class="panel-card receipts-result-card">
+              <h3 class="panel-title">Extracted data</h3>
+
+              <div class="receipts-result-empty" id="receipts-result-empty">
+                <i class="fa-solid fa-receipt"></i>
+
+                <p>Scan a receipt to see extracted fields here.</p>
+              </div>
+
+              <div
+                class="receipts-result-body"
+                id="receipts-result-body"
+                hidden
+              >
+                <div
+                  class="receipts-match-banner"
+                  id="receipts-match-banner"
+                ></div>
+
+                <div class="receipts-violations" id="receipts-violations"></div>
+
+                <form id="receipts-form" class="receipts-form">
+                  <div class="receipts-form-grid">
+                    <label class="receipts-field"
+                      ><span>Merchant</span><input name="merchant" type="text"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>Date</span><input name="date" type="date"
+                    /></label>
+
+                    <label class="receipts-field receipts-field--wide"
+                      ><span>Description</span
+                      ><input name="description" type="text"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>Category</span>
+
+                      <select name="category">
+                        <option value="">Select</option>
+
+                        <option>Fuel</option>
+
+                        <option>Meals &amp; Entertainment</option>
+
+                        <option>Lodging</option>
+
+                        <option>Transportation</option>
+
+                        <option>Vehicle Maintenance</option>
+
+                        <option>Permits &amp; Fees</option>
+
+                        <option>Office Supplies</option>
+
+                        <option>Software &amp; Subscriptions</option>
+
+                        <option>Telecommunications</option>
+
+                        <option>General Business</option>
+                      </select>
+                    </label>
+
+                    <label class="receipts-field"
+                      ><span>Amount (CAD)</span
+                      ><input name="amount" type="number" step="0.01"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>Tax</span
+                      ><input name="tax" type="number" step="0.01"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>Tip</span
+                      ><input name="tip" type="number" step="0.01"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>City</span><input name="city" type="text"
+                    /></label>
+
+                    <label class="receipts-field"
+                      ><span>State</span><input name="state" type="text"
+                    /></label>
+                  </div>
+
+                  <div
+                    id="receipts-dining-wrap"
+                    class="receipts-dining-wrap"
+                    hidden
+                  >
+                    <fieldset
+                      class="receipts-field receipts-field--wide proposal-budget-question receipts-dining-fieldset"
+                    >
+                      <legend>
+                        Who ate?
+                        <span class="proposal-optional">restaurant / caf?</span>
+                      </legend>
+
+                      <p class="receipts-dining-help">
+                        Total people at the table, including you.
+                      </p>
+
+                      <label class="receipts-field receipts-field--inline">
+                        <span>Party size</span>
+
+                        <input
+                          type="number"
+                          name="dining_party_size"
+                          id="receipts-dining-party-size"
+                          min="1"
+                          max="50"
+                          value="1"
+                        />
+                      </label>
+
+                      <div class="receipts-dining-colleagues">
+                        <span class="receipts-dining-colleagues-label"
+                          >Colleagues at the meal
+                          <span class="proposal-optional"
+                            >(optional)</span
+                          ></span
+                        >
+
+                        <div
+                          id="receipts-dining-colleagues-list"
+                          class="proposal-colleagues-list"
+                        ></div>
+                      </div>
+                    </fieldset>
+                  </div>
+
+                  <fieldset
+                    class="receipts-field receipts-field--wide proposal-budget-question receipts-purpose-question"
+                  >
+                    <legend>
+                      Is this spending for personal use or a project?
+                    </legend>
+
+                    <label class="proposal-radio">
+                      <input
+                        type="radio"
+                        name="spending_purpose"
+                        value="project"
+                        checked
+                        required
+                      />
+
+                      <span>Project use</span>
+
+                      <small
+                        >Business or approved project expense on a company
+                        card.</small
+                      >
+                    </label>
+
+                    <label class="proposal-radio">
+                      <input
+                        type="radio"
+                        name="spending_purpose"
+                        value="personal"
+                        required
+                      />
+
+                      <span>Personal use</span>
+
+                      <small
+                        >Personal purchase (may require reimbursement or
+                        review).</small
+                      >
+                    </label>
+                  </fieldset>
+
+                  <div id="receipts-project-wrap" class="receipts-project-wrap">
+                    <label class="receipts-field receipts-field--wide">
+                      <span>Which approved project?</span>
+
+                      <select name="project_id" id="receipts-project-select">
+                        <option value="">Loading projects</option>
+                      </select>
+                    </label>
+
+                    <p
+                      class="receipts-project-empty"
+                      id="receipts-project-empty"
+                      hidden
+                    >
+                      No approved projects yet. Submit one in
+                      <strong>My projects</strong> and wait for approval.
+                    </p>
+
+                    <p
+                      class="receipts-project-spend-hint"
+                      id="receipts-project-spend-hint"
+                    ></p>
+                  </div>
+
+                  <footer class="receipts-form-foot">
+                    <button type="submit" class="btn-sm btn-approve">
+                      Save &amp; confirm
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-sm"
+                      id="receipts-cancel-btn"
+                    >
+                      Cancel
+                    </button>
+                  </footer>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card receipts-history-card">
+            <h3 class="panel-title">Saved receipts</h3>
+
+            <div class="receipts-history-list" id="receipts-history-list">
+              <div class="guardian-item">No saved receipts yet.</div>
+            </div>
+          </div>
+        </div>
+
+        {% endif %}
+
+        <div id="insight-alerts" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div class="page-guide-body">
+              <strong>Policy violations</strong>
+
+              <p>
+                See repeat offenders and individual purchases that broke your
+                rules. To change what gets flagged, edit
+                <button
+                  type="button"
+                  class="page-help-link"
+                  data-insight="settings"
+                  data-settings-tab="rules"
+                >
+                  Spending rules</button
+                >.
+              </p>
+            </div>
+          </div>
+
+          <nav
+            class="section-subnav"
+            id="alerts-subnav"
+            aria-label="Problem sections"
+          >
+            <button
+              type="button"
+              class="section-subnav-btn section-subnav-btn--active"
+              data-scroll="section-offenders"
+            >
+              Repeat offenders
+            </button>
+
+            <button
+              type="button"
+              class="section-subnav-btn"
+              data-scroll="section-flags"
+            >
+              Bad purchases
+            </button>
+          </nav>
+
+          <div class="panel-card" id="section-offenders">
+            <h3 class="panel-title">People who break rules often</h3>
+
+            <p class="panel-subtitle">Most violations first</p>
+
+            <div class="guardian-list offenders-grid" id="offenders-list"></div>
+          </div>
+
+          <div class="panel-card" id="section-flags">
+            <h3 class="panel-title">Purchases that look wrong</h3>
+
+            <p class="panel-subtitle">
+              Worst problems first, tap a filter to narrow down
+            </p>
+
+            <div class="flags-toolbar" id="flags-severity-filter">
+              <button
+                type="button"
+                class="prompt-chip flags-filter flags-filter--active"
+                data-severity="all"
+              >
+                All
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip flags-filter"
+                data-severity="Severe"
+              >
+                Very bad
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip flags-filter"
+                data-severity="High"
+              >
+                Bad
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip flags-filter"
+                data-severity="Medium"
+              >
+                Maybe bad
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip flags-filter"
+                data-severity="Low"
+              >
+                Small issue
+              </button>
+
+              <input
+                type="search"
+                class="flags-search"
+                id="flags-search"
+                placeholder="Search by name or store"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="tx-table-wrap" id="alerts-list"></div>
+          </div>
+        </div>
+
+        <div id="insight-approvals" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+
+            <div class="page-guide-body">
+              <strong>One queue for every approval</strong>
+
+              <p>
+                Pick an item on the left, read the AI recommendation on the
+                right then tap
+                <strong class="review-decision-phrase">Approve or Deny</strong>.
+                No email back-and-forth needed.
+              </p>
+            </div>
+          </div>
+
+          <div class="review-howto panel-card">
+            <span class="review-howto-step"
+              ><strong>1</strong> Pick an item</span
+            >
+
+            <i class="fa-solid fa-arrow-right review-howto-arrow"></i>
+
+            <span class="review-howto-step"
+              ><strong>2</strong> Read AI recommendation</span
+            >
+
+            <i class="fa-solid fa-arrow-right review-howto-arrow"></i>
+
+            <span class="review-howto-step"
+              ><strong>3</strong>
+              <span class="review-decision-phrase">Approve or Deny</span></span
+            >
+
+            <span class="review-howto-keys">A for approve, D for deny</span>
+          </div>
+
+          <div class="review-toolbar panel-card">
+            <p class="review-summary" id="review-summary" hidden></p>
+
+            <div class="review-stats" id="review-stats"></div>
+
+            <div class="review-toolbar-actions">
+              <div
+                class="review-filters"
+                id="review-filters"
+                aria-label="Filter review queue"
+              >
+                <button
+                  type="button"
+                  class="prompt-chip review-filter review-filter--active"
+                  data-review-filter="all"
+                  title="Everything waiting for a decision"
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  class="prompt-chip review-filter"
+                  data-review-filter="flag"
+                  title="Purchases flagged by policy rules"
+                >
+                  Policy flags
+                </button>
+                <button
+                  type="button"
+                  class="prompt-chip review-filter"
+                  data-review-filter="approval"
+                  title="High-value purchases needing sign-off"
+                >
+                  Spending requests
+                </button>
+                <button
+                  type="button"
+                  class="prompt-chip review-filter"
+                  data-review-filter="proposal"
+                  title="New project budget requests"
+                >
+                  Project proposals
+                </button>
+                <button
+                  type="button"
+                  class="prompt-chip review-filter"
+                  data-review-filter="fraud"
+                  title="Suspicious activity detected by fraud scoring"
+                >
+                  Fraud alerts
+                </button>
+              </div>
+
+              <div class="review-threshold">
+                <label
+                  for="fraud-threshold"
+                  title="Lower = more fraud alerts. Higher = fewer false positives."
+                  >Fraud sensitivity</label
+                >
+                <input
+                  type="range"
+                  id="fraud-threshold"
+                  min="0.1"
+                  max="0.9"
+                  step="0.05"
+                  value="0.58"
+                />
+                <span id="fraud-threshold-val">0.58</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-workspace">
+            <div class="review-workspace-col">
+              <h3 class="review-col-heading">Waiting for you</h3>
+              <p class="review-col-hint">Click a card to see details</p>
+              <div
+                class="review-queue panel-card"
+                id="review-queue"
+                aria-label="Review queue"
+              >
+                <div class="review-queue-empty guardian-item">
+                  Loading review queue
+                </div>
+              </div>
+            </div>
+
+            <div class="review-workspace-col">
+              <h3 class="review-col-heading">Details &amp; decision</h3>
+              <p class="review-col-hint">
+                AI recommendation and context appear here
+              </p>
+              <section
+                class="review-detail panel-card"
+                id="review-detail"
+                hidden
+              >
+                <div class="review-detail-empty">
+                  <i class="fa-solid fa-hand-pointer"></i>
+                  <h3>Select an item to review</h3>
+                  <p>
+                    Each card shows who spent, how much, and why it needs your
+                    attention.
+                  </p>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-proposals" class="insight-view">
+          <p class="page-help">
+            Submit a project idea with the budget you need. Your CEO or finance
+            lead will review it in the <strong>Review</strong> queue.
+          </p>
+          <div class="proposal-layout">
+            <div class="panel-card proposal-form-card">
+              <h3 class="panel-title">New project proposal</h3>
+              <p class="panel-subtitle" id="proposal-budget-hint">
+                Loading your department budget
+              </p>
+              <form id="proposal-form" class="proposal-form">
+                <label class="proposal-field">
+                  <span>Project title</span>
+                  <input
+                    type="text"
+                    id="proposal-title"
+                    maxlength="200"
+                    placeholder="e.g. Q2 customer conference booth"
+                    required
+                  />
+                </label>
+                <fieldset class="proposal-field proposal-budget-question">
+                  <legend>
+                    Is this project using your department&apos;s existing
+                    budget, or requesting extra budget?
+                  </legend>
+                  <label class="proposal-radio">
+                    <input
+                      type="radio"
+                      name="proposal-budget-source"
+                      value="existing"
+                      checked
+                      required
+                    />
+                    <span>Use existing department budget</span>
+                    <small
+                      >Spend from what your department already has left this
+                      quarter.</small
+                    >
+                  </label>
+                  <label class="proposal-radio">
+                    <input
+                      type="radio"
+                      name="proposal-budget-source"
+                      value="extra"
+                      required
+                    />
+                    <span>Request extra budget</span>
+                    <small
+                      >Ask for additional funds beyond the current department
+                      cap.</small
+                    >
+                  </label>
+                </fieldset>
+                <label class="proposal-field">
+                  <span>Budget requested (CAD)</span>
+                  <input
+                    type="number"
+                    id="proposal-amount"
+                    min="1"
+                    step="0.01"
+                    placeholder="5000"
+                    required
+                  />
+                </label>
+
+                <label class="proposal-field">
+                  <span>Description &amp; justification</span>
+
+                  <textarea
+                    id="proposal-description"
+                    rows="5"
+                    placeholder="What is the project, why does the team need it, and how will the budget be used?"
+                    required
+                  ></textarea>
+                </label>
+
+                <fieldset class="proposal-field proposal-colleagues-field">
+                  <legend>
+                    Add colleagues
+                    <span class="proposal-optional">(optional)</span>
+                  </legend>
+
+                  <p class="proposal-colleagues-help">
+                    Search for teammates by name.
+                  </p>
+
+                  <div class="colleague-picker" id="proposal-colleague-picker">
+                    <div
+                      class="proposal-colleagues-chips colleague-picker-selected"
+                      id="proposal-colleagues-selected"
+                      hidden
+                    ></div>
+
+                    <div class="colleague-picker-input-wrap">
+                      <div class="colleague-picker-search-wrap">
+                        <i
+                          class="fa-solid fa-magnifying-glass"
+                          aria-hidden="true"
+                        ></i>
+
+                        <input
+                          type="search"
+                          id="proposal-colleague-search"
+                          placeholder="Search by name"
+                          autocomplete="off"
+                          aria-expanded="false"
+                          aria-controls="proposal-colleague-dropdown"
+                        />
+                      </div>
+
+                      <div
+                        class="colleague-picker-dropdown"
+                        id="proposal-colleague-dropdown"
+                        role="listbox"
+                        hidden
+                      ></div>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <footer class="proposal-form-footer">
+                  <span
+                    class="proposal-form-status"
+                    id="proposal-form-status"
+                  ></span>
+
+                  <button
+                    type="submit"
+                    class="btn-sm btn-dark"
+                    id="proposal-submit-btn"
+                  >
+                    Submit for approval
+                  </button>
+                </footer>
+              </form>
+            </div>
+
+            <div class="panel-card proposal-history-card">
+              <h3 class="panel-title">Your submissions</h3>
+
+              <p class="panel-subtitle">Track pending and past decisions</p>
+
+              <div id="proposal-list" class="proposal-list">
+                <div class="guardian-item">Loading</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-trip-reports" class="insight-view">
+          <p class="page-help">
+            Select the card purchases from a business trip, add a short
+            description, and submit for finance review. Approved reports appear
+            in the admin <strong>Review</strong> queue.
+          </p>
+          <div class="proposal-layout trip-report-layout">
+            <div class="panel-card proposal-form-card">
+              <h3 class="panel-title">New trip report</h3>
+              <p class="panel-subtitle" id="trip-report-txn-hint">
+                Loading your eligible purchases?
+              </p>
+              <form id="trip-report-form" class="proposal-form">
+                <label class="proposal-field">
+                  <span>Trip name</span>
+                  <input
+                    type="text"
+                    id="trip-report-name"
+                    maxlength="200"
+                    placeholder="e.g. Q2 Toronto client visit"
+                    required
+                  />
+                </label>
+                <label class="proposal-field">
+                  <span>Purpose &amp; justification</span>
+                  <textarea
+                    id="trip-report-purpose"
+                    rows="4"
+                    placeholder="Who did you meet, what was the business purpose, and why should these expenses be reimbursed?"
+                    required
+                  ></textarea>
+                </label>
+                <fieldset
+                  class="proposal-field proposal-budget-question trip-report-purpose-question"
+                >
+                  <legend>Is this trip for personal use or a project?</legend>
+                  <label class="proposal-radio">
+                    <input
+                      type="radio"
+                      name="trip_spending_purpose"
+                      value="project"
+                      checked
+                      required
+                    />
+                    <span>Project use</span>
+                    <small
+                      >Business travel tied to an approved project
+                      budget.</small
+                    >
+                  </label>
+                  <label class="proposal-radio">
+                    <input
+                      type="radio"
+                      name="trip_spending_purpose"
+                      value="personal"
+                      required
+                    />
+                    <span>Personal use</span>
+                    <small
+                      >Personal travel that may require separate reimbursement
+                      review.</small
+                    >
+                  </label>
+                </fieldset>
+                <div
+                  id="trip-report-project-wrap"
+                  class="receipts-project-wrap"
+                >
+                  <label class="proposal-field">
+                    <span>Which approved project?</span>
+                    <select name="project_id" id="trip-report-project-select">
+                      <option value="">Loading projects?</option>
+                    </select>
+                  </label>
+                  <p
+                    class="receipts-project-empty"
+                    id="trip-report-project-empty"
+                    hidden
+                  >
+                    No approved projects yet. Submit one in
+                    <strong>My projects</strong> and wait for approval.
+                  </p>
+                  <p
+                    class="receipts-project-spend-hint"
+                    id="trip-report-project-spend-hint"
+                  ></p>
+                </div>
+                <fieldset class="proposal-field trip-report-txn-field">
+                  <legend>Purchases on this trip</legend>
+                  <p class="proposal-colleagues-help">
+                    Search and add every purchase that belongs to the same trip.
+                    Purchases already on another report are hidden.
+                  </p>
+                  <p
+                    class="trip-report-txn-total"
+                    id="trip-report-txn-total"
+                    hidden
+                  ></p>
+                  <div
+                    class="colleague-picker trip-purchase-picker"
+                    id="trip-report-purchase-picker"
+                  >
+                    <div
+                      class="proposal-colleagues-chips colleague-picker-selected"
+                      id="trip-report-purchases-selected"
+                      hidden
+                    ></div>
+                    <div class="colleague-picker-input-wrap">
+                      <div class="colleague-picker-search-wrap">
+                        <i
+                          class="fa-solid fa-magnifying-glass"
+                          aria-hidden="true"
+                        ></i>
+                        <input
+                          type="search"
+                          id="trip-report-purchase-search"
+                          placeholder="Search by vendor, date, or amount"
+                          autocomplete="off"
+                          aria-expanded="false"
+                          aria-controls="trip-report-purchase-dropdown"
+                        />
+                      </div>
+                      <div
+                        class="colleague-picker-dropdown"
+                        id="trip-report-purchase-dropdown"
+                        role="listbox"
+                        hidden
+                      ></div>
+                    </div>
+                  </div>
+                  <p
+                    class="trip-report-purchase-empty guardian-item"
+                    id="trip-report-purchase-empty"
+                    hidden
+                  >
+                    No eligible purchases right now.
+                  </p>
+                </fieldset>
+                <footer class="proposal-form-footer">
+                  <span
+                    class="proposal-form-status"
+                    id="trip-report-form-status"
+                  ></span>
+                  <button
+                    type="submit"
+                    class="btn-sm btn-dark"
+                    id="trip-report-submit-btn"
+                  >
+                    Submit trip report
+                  </button>
+                </footer>
+              </form>
+            </div>
+            <div class="panel-card proposal-history-card">
+              <h3 class="panel-title">Your trip reports</h3>
+              <p class="panel-subtitle">Track pending and past decisions</p>
+              <div id="trip-report-list" class="proposal-list">
+                <div class="guardian-item">Loading?</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-settings" class="insight-view">
+          <div class="page-guide">
+            <div class="page-guide-icon"><i class="fa-solid fa-gear"></i></div>
+
+            <div class="page-guide-body">
+              <strong>Configure CashFlux</strong>
+
+              <p>
+                Set quarterly budget caps per department and define spending
+                rules (meal limits, approval thresholds, restricted merchants).
+                Changes apply immediately to new policy scans.
+              </p>
+            </div>
+          </div>
+
+          <nav
+            class="section-subnav"
+            id="settings-subnav"
+            aria-label="Settings sections"
+          >
+            <button
+              type="button"
+              class="section-subnav-btn section-subnav-btn--active"
+              data-settings-tab="budgets"
+            >
+              Department budgets
+            </button>
+
+            <button
+              type="button"
+              class="section-subnav-btn"
+              data-settings-tab="rules"
+            >
+              Spending rules
+            </button>
+          </nav>
+
+          <div
+            class="settings-panel settings-panel--active"
+            id="settings-panel-budgets"
+          >
+            <div class="panel-card">
+              <h3 class="panel-title">Set budget per department</h3>
+
+              <p class="panel-subtitle" id="settings-budget-quarter">
+                How much each department can spend this quarter.
+              </p>
+
+              <div class="settings-budget-list" id="settings-budget-list"></div>
+
+              <footer class="settings-footer">
+                <span
+                  class="settings-save-status"
+                  id="budget-save-status"
+                ></span>
+
+                <button type="button" class="btn-sm" id="budget-reset-btn">
+                  Use suggested amounts
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-sm btn-dark"
+                  id="budget-save-btn"
+                >
+                  Save budgets
+                </button>
+              </footer>
+            </div>
+          </div>
+
+          <div class="settings-panel" id="settings-panel-rules">
+            <div class="panel-card policy-import-card">
+              <h3 class="panel-title">Import policy from PDF</h3>
+
+              <p class="panel-subtitle">
+                Upload your company expense policy document, Friday reads it and
+                updates all spending rules below automatically.
+              </p>
+
+              <div class="policy-import-dropzone" id="policy-import-dropzone">
+                <input
+                  type="file"
+                  id="policy-import-input"
+                  accept="application/pdf,.pdf,.md,.txt"
+                  hidden
+                />
+
+                <div class="policy-import-empty" id="policy-import-empty">
+                  <i class="fa-solid fa-file-pdf"></i>
+
+                  <p>
+                    <strong>Drop your policy PDF here</strong> or click to
+                    browse
+                  </p>
+
+                  <span>PDF, Markdown, or text (max 15 MB)</span>
+                </div>
+              </div>
+
+              <div class="policy-import-actions">
+                <button
+                  type="button"
+                  class="btn-sm btn-dark"
+                  id="policy-import-btn"
+                  disabled
+                >
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Apply policy
+                  with Gemini
+                </button>
+
+                <span
+                  class="policy-import-status"
+                  id="policy-import-status"
+                ></span>
+              </div>
+
+              <ul
+                class="policy-import-notes"
+                id="policy-import-notes"
+                hidden
+              ></ul>
+            </div>
+
+            <div class="panel-card settings-policy-card">
+              <h3 class="panel-title">Spending rules</h3>
+
+              <p class="panel-subtitle">
+                Limits, keywords, and the full policy document
+              </p>
+
+              <nav
+                class="policy-editor-tabs"
+                id="policy-editor-tabs"
+                aria-label="Policy editor sections"
+              >
+                <button
+                  type="button"
+                  class="policy-editor-tab policy-editor-tab--active"
+                  data-policy-tab="thresholds"
+                >
+                  Limits
+                </button>
+
+                <button
+                  type="button"
+                  class="policy-editor-tab"
+                  data-policy-tab="meals"
+                >
+                  Meals &amp; travel
+                </button>
+
+                <button
+                  type="button"
+                  class="policy-editor-tab"
+                  data-policy-tab="keywords"
+                >
+                  Keywords
+                </button>
+
+                <button
+                  type="button"
+                  class="policy-editor-tab"
+                  data-policy-tab="departments"
+                >
+                  By department
+                </button>
+
+                <button
+                  type="button"
+                  class="policy-editor-tab"
+                  data-policy-tab="roles"
+                >
+                  By role
+                </button>
+
+                <button
+                  type="button"
+                  class="policy-editor-tab"
+                  data-policy-tab="document"
+                >
+                  Policy text
+                </button>
+              </nav>
+
+              <form id="policy-editor-form" class="policy-editor-body">
+                <div
+                  class="policy-editor-panel policy-editor-panel--active"
+                  data-policy-panel="thresholds"
+                ></div>
+
+                <div
+                  class="policy-editor-panel"
+                  data-policy-panel="meals"
+                ></div>
+
+                <div
+                  class="policy-editor-panel"
+                  data-policy-panel="keywords"
+                ></div>
+
+                <div
+                  class="policy-editor-panel"
+                  data-policy-panel="departments"
+                ></div>
+
+                <div
+                  class="policy-editor-panel"
+                  data-policy-panel="roles"
+                ></div>
+
+                <div class="policy-editor-panel" data-policy-panel="document">
+                  <label class="policy-field policy-field--full">
+                    <span>Full policy (Markdown)</span>
+
+                    <textarea
+                      id="policy-document-input"
+                      rows="18"
+                      placeholder="Company expense policy"
+                    ></textarea>
+                  </label>
+                </div>
+              </form>
+
+              <footer class="settings-footer policy-editor-footer">
+                <span
+                  class="settings-save-status"
+                  id="policy-save-status"
+                ></span>
+
+                <button
+                  type="button"
+                  class="btn-sm btn-dark"
+                  id="policy-save-btn"
+                >
+                  Save rules
+                </button>
+              </footer>
+            </div>
+          </div>
+        </div>
+
+        <div id="insight-chat" class="insight-view insight-view--chat">
+          <div class="page-guide page-guide--chat">
+            <div class="page-guide-icon"><i class="fa-solid fa-robot"></i></div>
+
+            <div class="page-guide-body">
+              <strong>Friday, your spending assistant</strong>
+
+              <p>
+                Ask in plain English. Friday answers with exact numbers from
+                your data and shows a chart when one helps. Follow-up questions
+                work too. For example "How does that compare to Engineering?"
+              </p>
+            </div>
+          </div>
+
+          <p class="chat-prompts-label">Try asking:</p>
+
+          <div class="chat-panel">
+            <div class="prompt-row" id="suggested-prompts">
+              <button
+                type="button"
+                class="prompt-chip"
+                data-prompt="What did Marketing spend on software last quarter?"
+              >
+                Marketing software spend
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip"
+                data-prompt="At this burn rate, will Marketing exceed its budget this quarter?"
+              >
+                Will we run out of money?
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip"
+                data-prompt="Who are the top 5 vendors this month?"
+              >
+                Top vendors
+              </button>
+
+              <button
+                type="button"
+                class="prompt-chip"
+                data-prompt="Show me flagged purchases"
+              >
+                Policy flags
+              </button>
+            </div>
+
+            <div class="chat-viewport">
+              <div id="chat" class="messages" aria-live="polite">
+                <div
+                  id="typing-indicator"
+                  class="typing-bubble"
+                  style="display: none"
+                >
+                  <span class="dot"></span><span class="dot"></span
+                  ><span class="dot"></span>
+                </div>
+              </div>
+            </div>
+
+            <footer class="chat-footer">
+              <div class="composer">
+                <div id="attachment-preview" class="attachment-preview" hidden>
+                  <div class="attachment-chip" id="attachment-chip"></div>
+
+                  <button
+                    type="button"
+                    class="attachment-remove"
+                    id="attachment-remove"
+                    aria-label="Remove attachment"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+
+                <div class="composer-row">
+                  <input
+                    type="file"
+                    id="receipt-input"
+                    accept="image/*,application/pdf"
+                    hidden
+                  />
+
+                  <button
+                    type="button"
+                    id="attach-btn"
+                    class="attach-btn"
+                    title="Attach receipt or PDF"
+                  >
+                    <i class="fa-solid fa-paperclip"></i>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="chat-mic-btn"
+                    class="attach-btn chat-mic-btn"
+                    title="Speak to Friday (Alt+V)"
+                    aria-label="Speak to Friday"
+                  >
+                    <i class="fa-solid fa-microphone"></i>
+                  </button>
+
+                  <div class="input-wrap">
+                    <input
+                      id="message-input"
+                      class="chat-input"
+                      type="text"
+                      placeholder="Ask or tell Friday what to do, e.g. Approve pending projects, set Engineering budget to $50k"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    id="sendQuestion"
+                    class="send-btn"
+                    aria-label="Send"
+                  >
+                    <i class="fa-solid fa-arrow-up"></i>
+                  </button>
+                </div>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
+<div id="command-palette" class="command-palette" hidden>
+  <div class="command-palette-backdrop" data-close-palette></div>
 
+  <div
+    class="command-palette-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Quick jump"
+  >
+    <div class="command-palette-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
 
+      <input
+        type="search"
+        id="command-palette-input"
+        placeholder="Jump to a page or action"
+        autocomplete="off"
+      />
 
+      <kbd>Esc</kbd>
+    </div>
 
-
+    <ul class="command-palette-list" id="command-palette-list"></ul>
+  </div>
+</div>
 
 <div id="employee-modal" class="employee-modal" hidden>
-
-
-
-    <div class="employee-modal-backdrop" data-close-modal></div>
-
-
-
-    <div class="employee-modal-card surface">
-
-
-
-        <header class="employee-modal-header">
-
-
-
-            <div>
-
-
-
-                <h2 id="modal-employee-name">Employee</h2>
-
-
-
-                <p id="modal-employee-meta" class="insight-desc"></p>
-
-
-
-            </div>
-
-
-
-            <button type="button" class="btn-icon modal-close" data-close-modal aria-label="Close">
-
-
-
-                <i class="fa-solid fa-xmark"></i>
-
-
-
-            </button>
-
-
-
-        </header>
-
-
-
-        <div class="employee-modal-stats" id="modal-stats"></div>
-
-
-
-        <div class="modal-peer-benchmark" id="modal-peer-benchmark" hidden></div>
-
-
-
-        <div class="employee-modal-charts">
-
-
-
-            <div class="dash-chart-block">
-
-
-
-                <h4>By city</h4>
-
-
-
-                <div class="chart-wrap chart-wrap--sm"><canvas id="modal-chart-city"></canvas></div>
-
-
-
-            </div>
-
-
-
-            <div class="dash-chart-block">
-
-
-
-                <h4>Over time</h4>
-
-
-
-                <div class="chart-wrap chart-wrap--sm"><canvas id="modal-chart-month"></canvas></div>
-
-
-
-            </div>
-
-
-
+  <div class="employee-modal-backdrop" data-close-modal></div>
+
+  <div class="employee-modal-card surface">
+    <header class="employee-modal-header">
+      <div>
+        <h2 id="modal-employee-name">Employee</h2>
+
+        <p id="modal-employee-meta" class="insight-desc"></p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-icon modal-close"
+        data-close-modal
+        aria-label="Close"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
+
+    <div class="employee-modal-stats" id="modal-stats"></div>
+
+    <div class="modal-peer-benchmark" id="modal-peer-benchmark" hidden></div>
+
+    <div class="employee-modal-charts">
+      <div class="dash-chart-block">
+        <h4>By city</h4>
+
+        <div class="chart-wrap chart-wrap--sm">
+          <canvas id="modal-chart-city"></canvas>
         </div>
+      </div>
 
+      <div class="dash-chart-block">
+        <h4>Over time</h4>
 
-
-        <div class="dash-chart-block">
-
-
-
-            <h4>Recent transactions</h4>
-
-
-
-            <div class="tx-table-wrap" id="modal-tx-table"></div>
-
-
-
+        <div class="chart-wrap chart-wrap--sm">
+          <canvas id="modal-chart-month"></canvas>
         </div>
-
-
-
-        <footer class="employee-modal-footer">
-
-
-
-            <label class="compare-check">
-
-
-
-                <input type="checkbox" id="modal-compare-check"> Add to compare
-
-
-
-            </label>
-
-
-
-            <button type="button" class="btn-sm btn-pdf" id="modal-download-pdf">
-
-
-
-                Report Generation
-
-
-
-            </button>
-
-
-
-        </footer>
-
-
-
+      </div>
     </div>
 
+    <div class="dash-chart-block">
+      <h4>Recent transactions</h4>
 
+      <div class="tx-table-wrap" id="modal-tx-table"></div>
+    </div>
 
+    <footer class="employee-modal-footer">
+      <label class="compare-check">
+        <input type="checkbox" id="modal-compare-check" /> Add to compare
+      </label>
+
+      <button type="button" class="btn-sm btn-pdf" id="modal-download-pdf">
+        Report Generation
+      </button>
+    </footer>
+  </div>
 </div>
-
-
-
-
-
-
 
 <div id="compare-modal" class="employee-modal" hidden>
+  <div class="employee-modal-backdrop" data-close-compare></div>
 
+  <div class="employee-modal-card surface">
+    <header class="employee-modal-header">
+      <div>
+        <h2>Spending comparison</h2>
 
+        <p class="insight-desc" id="compare-modal-subtitle"></p>
+      </div>
 
-    <div class="employee-modal-backdrop" data-close-compare></div>
+      <button
+        type="button"
+        class="btn-icon modal-close"
+        data-close-compare
+        aria-label="Close"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
 
-
-
-    <div class="employee-modal-card surface">
-
-
-
-        <header class="employee-modal-header">
-
-
-
-            <div>
-
-
-
-                <h2>Spending comparison</h2>
-
-
-
-                <p class="insight-desc" id="compare-modal-subtitle"></p>
-
-
-
-            </div>
-
-
-
-            <button type="button" class="btn-icon modal-close" data-close-compare aria-label="Close">
-
-
-
-                <i class="fa-solid fa-xmark"></i>
-
-
-
-            </button>
-
-
-
-        </header>
-
-
-
-        <div class="chart-wrap chart-wrap--md"><canvas id="compare-chart"></canvas></div>
-
-
-
-        <div class="tx-table-wrap" id="compare-summary-table"></div>
-
-
-
-        <footer class="employee-modal-footer">
-
-
-
-            <span class="compare-label">Export this comparison</span>
-
-
-
-            <button type="button" class="btn-sm btn-pdf" id="compare-download-pdf">
-
-
-
-                Report Generation
-
-
-
-            </button>
-
-
-
-        </footer>
-
-
-
+    <div class="chart-wrap chart-wrap--md">
+      <canvas id="compare-chart"></canvas>
     </div>
 
+    <div class="tx-table-wrap" id="compare-summary-table"></div>
 
+    <footer class="employee-modal-footer">
+      <span class="compare-label">Export this comparison</span>
 
+      <button type="button" class="btn-sm btn-pdf" id="compare-download-pdf">
+        Report Generation
+      </button>
+    </footer>
+  </div>
 </div>
-
-
-
-
-
-
 
 <div id="report-detail-modal" class="employee-modal" hidden>
+  <div class="employee-modal-backdrop" data-close-report-modal></div>
 
+  <div class="employee-modal-card surface">
+    <header class="employee-modal-header">
+      <div>
+        <h2 id="report-modal-title">Expense report</h2>
+      </div>
 
+      <button
+        type="button"
+        class="btn-icon modal-close"
+        data-close-report-modal
+        aria-label="Close"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
 
-    <div class="employee-modal-backdrop" data-close-report-modal></div>
+    <div id="report-modal-body" class="tx-table-wrap"></div>
 
-
-
-    <div class="employee-modal-card surface">
-
-
-
-        <header class="employee-modal-header">
-
-
-
-            <div>
-
-
-
-                <h2 id="report-modal-title">Expense report</h2>
-
-
-
-            </div>
-
-
-
-            <button type="button" class="btn-icon modal-close" data-close-report-modal aria-label="Close">
-
-
-
-                <i class="fa-solid fa-xmark"></i>
-
-
-
-            </button>
-
-
-
-        </header>
-
-
-
-        <div id="report-modal-body" class="tx-table-wrap"></div>
-
-
-
-        <footer class="employee-modal-footer" id="report-modal-footer"></footer>
-
-
-
-    </div>
-
-
-
+    <footer class="employee-modal-footer" id="report-modal-footer"></footer>
+  </div>
 </div>
-
-
-
-
-
-
 
 <div id="voice-assistant" class="voice-assistant" aria-live="polite">
+  <div id="voice-panel" class="voice-panel" hidden>
+    <header class="voice-panel-head">
+      <strong>Friday</strong>
 
+      <button
+        type="button"
+        class="btn-icon voice-panel-close"
+        id="voice-panel-close"
+        aria-label="Close and cancel response"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </header>
 
+    <div class="voice-panel-body">
+      <p class="voice-status" id="voice-status" hidden></p>
 
-    <div id="voice-panel" class="voice-panel" hidden>
+      <div class="voice-transcript" id="voice-transcript" hidden></div>
 
-
-
-        <header class="voice-panel-head">
-
-
-
-            <strong>Friday</strong>
-
-
-
-            <button type="button" class="btn-icon voice-panel-close" id="voice-panel-close" aria-label="Close and cancel response">
-
-
-
-                <i class="fa-solid fa-xmark"></i>
-
-
-
-            </button>
-
-
-
-        </header>
-
-
-
-        <div class="voice-panel-body">
-
-
-
-            <p class="voice-status" id="voice-status" hidden></p>
-
-
-
-            <div class="voice-transcript" id="voice-transcript" hidden></div>
-
-
-
-            <div class="voice-reply" id="voice-reply" hidden></div>
-
-
-
-        </div>
-
-
-
-        <footer class="voice-panel-foot">
-
-
-
-            <p class="voice-panel-dismiss-hint">Closing cancels the response.</p>
-
-
-
-            <button type="button" class="voice-chip voice-chip--primary" id="voice-open-chat">Open chat</button>
-
-
-
-        </footer>
-
-
-
+      <div class="voice-reply" id="voice-reply" hidden></div>
     </div>
 
+    <footer class="voice-panel-foot">
+      <p class="voice-panel-dismiss-hint">Closing cancels the response.</p>
 
+      <button
+        type="button"
+        class="voice-chip voice-chip--primary"
+        id="voice-open-chat"
+      >
+        Open chat
+      </button>
+    </footer>
+  </div>
 
-    <button type="button" class="voice-orb" id="voice-orb" aria-label="Speak to Friday">
+  <button
+    type="button"
+    class="voice-orb"
+    id="voice-orb"
+    aria-label="Speak to Friday"
+  >
+    <span class="voice-orb-ring" aria-hidden="true"></span>
 
-
-
-        <span class="voice-orb-ring" aria-hidden="true"></span>
-
-
-
-        <i class="fa-solid fa-microphone voice-orb-icon" id="voice-orb-icon"></i>
-
-
-
-    </button>
-
-
-
+    <i class="fa-solid fa-microphone voice-orb-icon" id="voice-orb-icon"></i>
+  </button>
 </div>
-
-
-
-
-
-
 
 <div id="oracle-modal" class="oracle-modal" hidden aria-hidden="true">
+  <div class="oracle-backdrop" data-oracle-close></div>
 
+  <div
+    class="oracle-card"
+    role="dialog"
+    aria-labelledby="oracle-title"
+    aria-modal="true"
+  >
+    <canvas
+      id="oracle-confetti"
+      class="oracle-confetti"
+      aria-hidden="true"
+    ></canvas>
 
+    <button
+      type="button"
+      class="oracle-close"
+      data-oracle-close
+      aria-label="Close"
+    >
+      &times;
+    </button>
 
-    <div class="oracle-backdrop" data-oracle-close></div>
+    <div class="oracle-glow" aria-hidden="true"></div>
 
-
-
-    <div class="oracle-card" role="dialog" aria-labelledby="oracle-title" aria-modal="true">
-
-
-
-        <canvas id="oracle-confetti" class="oracle-confetti" aria-hidden="true"></canvas>
-
-
-
-        <button type="button" class="oracle-close" data-oracle-close aria-label="Close">&times;</button>
-
-
-
-        <div class="oracle-glow" aria-hidden="true"></div>
-
-
-
-        <div class="oracle-icon-wrap">
-
-
-
-            <i class="fa-solid fa-wand-magic-sparkles" id="oracle-icon"></i>
-
-
-
-        </div>
-
-
-
-        <p class="oracle-eyebrow">Spending Oracle</p>
-
-
-
-        <h2 class="oracle-title" id="oracle-title">The Connoisseur</h2>
-
-
-
-        <p class="oracle-tagline" id="oracle-tagline"></p>
-
-
-
-        <div class="oracle-spark-wrap">
-
-
-
-            <canvas id="oracle-sparkline" height="80"></canvas>
-
-
-
-        </div>
-
-
-
-        <ul class="oracle-insights" id="oracle-insights"></ul>
-
-
-
-        <p class="oracle-flair" id="oracle-flair"></p>
-
-
-
-        <p class="oracle-hint">Psst ? type <kbd>surprise me</kbd> in Friday anytime, or click the CF logo seven times.</p>
-
-
-
+    <div class="oracle-icon-wrap">
+      <i class="fa-solid fa-wand-magic-sparkles" id="oracle-icon"></i>
     </div>
 
+    <p class="oracle-eyebrow">Spending Oracle</p>
 
+    <h2 class="oracle-title" id="oracle-title">The Connoisseur</h2>
 
+    <p class="oracle-tagline" id="oracle-tagline"></p>
+
+    <div class="oracle-spark-wrap">
+      <canvas id="oracle-sparkline" height="80"></canvas>
+    </div>
+
+    <ul class="oracle-insights" id="oracle-insights"></ul>
+
+    <p class="oracle-flair" id="oracle-flair"></p>
+
+    <p class="oracle-hint">
+      Psst &mdash; type <kbd>surprise me</kbd> in Friday anytime, or click the logo
+      seven times.
+    </p>
+  </div>
 </div>
 
-
-
 {% endblock %}
-
-
-

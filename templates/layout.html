@@ -1,73 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script>
-        (function () {
-            try {
-                var saved = localStorage.getItem('cashflux-theme');
-                var theme = saved === 'dark' || saved === 'light'
-                    ? saved
-                    : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.setAttribute('data-theme', theme);
-            } catch (e) {
-                document.documentElement.setAttribute('data-theme', 'light');
-            }
-        })();
-        </script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-        <title>{% block title %}CashFlux{% endblock %}</title>
-        {% block headscript %}{% endblock %}
-    </head>
-    <body>
-        {% block content %}{% endblock %}
-        {% block footer_scripts %}
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
-        <script>
-        (function () {
-            function syncThemeToggle() {
-                var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-                document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
-                    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-                    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-                    var lightIcon = btn.querySelector('.theme-toggle-icon-light');
-                    var darkIcon = btn.querySelector('.theme-toggle-icon-dark');
-                    if (lightIcon) lightIcon.hidden = dark;
-                    if (darkIcon) darkIcon.hidden = !dark;
-                    var label = btn.querySelector('.theme-toggle-label');
-                    if (label) label.textContent = dark ? 'Light mode' : 'Dark mode';
-                });
-            }
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                try { localStorage.setItem('cashflux-theme', theme); } catch (e) {}
-                syncThemeToggle();
-                window.dispatchEvent(new CustomEvent('cashflux-theme-change', { detail: { theme: theme } }));
-            }
-            window.cashfluxSetTheme = setTheme;
-            window.cashfluxToggleTheme = function () {
-                setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-            };
-            document.addEventListener('click', function (e) {
-                var btn = e.target.closest('[data-theme-toggle]');
-                if (btn) {
-                    e.preventDefault();
-                    window.cashfluxToggleTheme();
-                }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("cashflux-theme");
+          var theme =
+            saved === "dark" || saved === "light"
+              ? saved
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+    <title>{% block title %}CashFlux{% endblock %}</title>
+    {% block headscript %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}{% endblock %} {% block footer_scripts %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+      (function () {
+        function syncThemeToggle() {
+          var dark =
+            document.documentElement.getAttribute("data-theme") === "dark";
+          document
+            .querySelectorAll("[data-theme-toggle]")
+            .forEach(function (btn) {
+              btn.setAttribute("aria-pressed", dark ? "true" : "false");
+              btn.setAttribute(
+                "aria-label",
+                dark ? "Switch to light mode" : "Switch to dark mode",
+              );
+              var lightIcon = btn.querySelector(".theme-toggle-icon-light");
+              var darkIcon = btn.querySelector(".theme-toggle-icon-dark");
+              if (lightIcon) lightIcon.hidden = dark;
+              if (darkIcon) darkIcon.hidden = !dark;
+              var label = btn.querySelector(".theme-toggle-label");
+              if (label) label.textContent = dark ? "Light mode" : "Dark mode";
             });
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', syncThemeToggle);
-            } else {
-                syncThemeToggle();
-            }
-        })();
-        </script>
-        {% endblock %}
-    </body>
+        }
+        function setTheme(theme) {
+          document.documentElement.setAttribute("data-theme", theme);
+          try {
+            localStorage.setItem("cashflux-theme", theme);
+          } catch (e) {}
+          syncThemeToggle();
+          window.dispatchEvent(
+            new CustomEvent("cashflux-theme-change", {
+              detail: { theme: theme },
+            }),
+          );
+        }
+        window.cashfluxSetTheme = setTheme;
+        window.cashfluxToggleTheme = function () {
+          setTheme(
+            document.documentElement.getAttribute("data-theme") === "dark"
+              ? "light"
+              : "dark",
+          );
+        };
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-theme-toggle]");
+          if (btn) {
+            e.preventDefault();
+            window.cashfluxToggleTheme();
+          }
+        });
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", syncThemeToggle);
+        } else {
+          syncThemeToggle();
+        }
+      })();
+    </script>
+    {% endblock %}
+  </body>
 </html>

@@ -1,88 +1,147 @@
-{% extends "layout.html" %}
-{% block title %}Sign up — CashFlux{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %}Sign up | CashFlux{% endblock %} {%
+block content %}
 <div class="auth-page">
-    <button type="button" class="theme-toggle theme-toggle--floating" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
-        <span class="theme-toggle-icon theme-toggle-icon-light"><i class="fa-solid fa-moon"></i></span>
-        <span class="theme-toggle-icon theme-toggle-icon-dark" hidden><i class="fa-solid fa-sun"></i></span>
-        <span class="theme-toggle-label">Dark mode</span>
-    </button>
-    <div class="auth-card auth-card--wide">
-        <div class="auth-brand">
-            <div class="brand-mark">CF</div>
-            <h1>Get started</h1>
-            <p>Create a company or join with your employee profile</p>
-        </div>
-
-        <div class="auth-tabs">
-            <a href="{{ url_for('signup', mode='create') }}" class="auth-tab {% if mode != 'join' %}auth-tab--active{% endif %}">Create company</a>
-            <a href="{{ url_for('signup', mode='join') }}" class="auth-tab {% if mode == 'join' %}auth-tab--active{% endif %}">Join company</a>
-        </div>
-
-        {% if error %}
-        <div class="auth-error" role="alert">{{ error }}</div>
-        {% endif %}
-
-        <form method="post" class="auth-form">
-            <input type="hidden" name="mode" value="{{ 'join' if mode == 'join' else 'create' }}">
-
-            {% if mode == 'join' %}
-            <label class="auth-field">
-                <span>Company code</span>
-                <input type="text" name="company_slug" required placeholder="e.g. mpc-finance">
-                <small>Ask your Finance Admin for this code</small>
-            </label>
-            <label class="auth-field">
-                <span>Your name (from roster)</span>
-                {% if roster %}
-                <select name="employee_name" required>
-                    <option value="">Select your name…</option>
-                    {% for name in roster %}
-                    <option value="{{ name }}">{{ name }}</option>
-                    {% endfor %}
-                </select>
-                {% else %}
-                <input type="text" name="employee_name" required placeholder="Your full name">
-                <small>No employee roster yet — enter your name as it will appear on expenses.</small>
-                {% endif %}
-            </label>
-            {% else %}
-            <label class="auth-field">
-                <span>Company name</span>
-                <input type="text" name="company_name" required placeholder="Acme Corp">
-            </label>
-            <label class="auth-field">
-                <span>Your role</span>
-                <select name="role">
-                    <option value="finance_admin">Finance Admin</option>
-                    <option value="ceo">CEO</option>
-                </select>
-            </label>
-            {% endif %}
-
-            <label class="auth-field">
-                <span>Your name</span>
-                <input type="text" name="display_name" required placeholder="Jane Smith">
-            </label>
-            <label class="auth-field">
-                <span>Email</span>
-                <input type="email" name="email" required autocomplete="email" placeholder="you@company.com">
-            </label>
-            <label class="auth-field">
-                <span>Password</span>
-                <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
-            </label>
-
-            <button type="submit" class="auth-submit">
-                {% if mode == 'join' %}Join company{% else %}Create company{% endif %}
-            </button>
-        </form>
-
-        <p class="auth-switch">
-            Already have an account?
-            <a href="{{ url_for('login') }}">Sign in</a>
-        </p>
+  <button
+    type="button"
+    class="theme-toggle theme-toggle--floating"
+    data-theme-toggle
+    aria-pressed="false"
+    aria-label="Switch to dark mode"
+  >
+    <span class="theme-toggle-icon theme-toggle-icon-light"
+      ><i class="fa-solid fa-moon"></i
+    ></span>
+    <span class="theme-toggle-icon theme-toggle-icon-dark" hidden
+      ><i class="fa-solid fa-sun"></i
+    ></span>
+    <span class="theme-toggle-label">Dark mode</span>
+  </button>
+  <div class="auth-card auth-card--wide">
+    <div class="auth-brand">
+      <div class="brand-mark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
+      <h1>Get started</h1>
+      <p>Create a company or join with your employee profile</p>
     </div>
+
+    <div class="auth-tabs">
+      <a
+        href="{{ url_for('signup', mode='create') }}"
+        class="auth-tab {% if mode != 'join' %}auth-tab--active{% endif %}"
+        >Create company</a
+      >
+      <a
+        href="{{ url_for('signup', mode='join') }}"
+        class="auth-tab {% if mode == 'join' %}auth-tab--active{% endif %}"
+        >Join company</a
+      >
+    </div>
+
+    {% if error %}
+    <div class="auth-error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="auth-form">
+      <input
+        type="hidden"
+        name="mode"
+        value="{{ 'join' if mode == 'join' else 'create' }}"
+      />
+
+      {% if mode == 'join' %}
+      <label class="auth-field">
+        <span>Company code</span>
+        <input
+          type="text"
+          name="company_slug"
+          required
+          placeholder="e.g. acme-corp"
+        />
+        <small>Ask your Finance Admin for this code</small>
+      </label>
+      <label class="auth-field">
+        <span>Your name (from roster)</span>
+        {% if roster %}
+        <select name="employee_name" required>
+          <option value="">Select your name…</option>
+          {% for name in roster %}
+          <option value="{{ name }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input
+          type="text"
+          name="employee_name"
+          required
+          placeholder="Your full name"
+        />
+        <small
+          >No employee roster yet. Enter your name as it will appear on
+          expenses.</small
+        >
+        {% endif %}
+      </label>
+      {% else %}
+      <label class="auth-field">
+        <span>Company name</span>
+        <input
+          type="text"
+          name="company_name"
+          required
+          placeholder="Acme Corp"
+        />
+      </label>
+      <label class="auth-field">
+        <span>Your role</span>
+        <select name="role">
+          <option value="finance_admin">Finance Admin</option>
+          <option value="ceo">CEO</option>
+        </select>
+      </label>
+      {% endif %}
+
+      <label class="auth-field">
+        <span>Your name</span>
+        <input
+          type="text"
+          name="display_name"
+          required
+          placeholder="Jane Smith"
+        />
+      </label>
+      <label class="auth-field">
+        <span>Email</span>
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          placeholder="you@company.com"
+        />
+      </label>
+      <label class="auth-field">
+        <span>Password</span>
+        <input
+          type="password"
+          name="password"
+          required
+          minlength="6"
+          autocomplete="new-password"
+          placeholder="At least 6 characters"
+        />
+      </label>
+
+      <button type="submit" class="auth-submit">
+        {% if mode == 'join' %}Join company{% else %}Create company{% endif %}
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      Already have an account?
+      <a href="{{ url_for('login') }}">Sign in</a>
+    </p>
+  </div>
 </div>
 {% endblock %}
+
