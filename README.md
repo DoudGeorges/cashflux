@@ -4,7 +4,7 @@
 
 # CashFlux
 
-AI-powered expense intelligence and automated fraud detection for small to medium-sized businesses.
+AI-powered expense intelligence and automated fraud detection platform for small to medium-sized businesses.
 
 Built by Team J2E2 (Jongmin Lee, Juan Felipe Duran, Elsa Zhang, and Édouard Chassé) in 24 hours for MPC Hacks 2026, a major hackathon organized by students from McGill University, Polytechnique Montréal, and Concordia University.
 
